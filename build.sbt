@@ -15,10 +15,8 @@ lazy val core = (
     settings(
       name                 :=  "scintuit-core",
       libraryDependencies  ++= Seq(
-        Libs.argonaut,
         Libs.enumeratum,
         Libs.enumeratumPlayJson,
-        Libs.http4sArgonaut,
         Libs.http4sClient,
         Libs.nscalaTime,
         Libs.nscalaMoney,
