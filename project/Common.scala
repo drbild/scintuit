@@ -1,7 +1,7 @@
 import sbt._
 import Keys._
 
-import Dependencies._
+import Dependencies.{Libs, V}
 
 object Common {
   val commonSettings: Seq[Setting[_]] = Seq(
@@ -12,6 +12,8 @@ object Common {
     scalacOptions ++= Seq("-language:implicitConversions", "-language:higherKinds"),
 
     updateOptions := updateOptions.value.withCachedResolution(true),
+
+    resolvers     ++= Dependencies.resolvers,
 
     libraryDependencies ++= Seq(
       Libs.scalaz,

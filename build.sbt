@@ -16,9 +16,15 @@ lazy val core = (
       name                 :=  "scintuit-core",
       libraryDependencies  ++= Seq(
         Libs.argonaut,
+        Libs.enumeratum,
+        Libs.enumeratumPlayJson,
         Libs.http4sArgonaut,
         Libs.http4sClient,
-        Libs.nscalaTime
+        Libs.nscalaTime,
+        Libs.nscalaMoney,
+        Libs.nscalaMoneyPlayJson,
+        Libs.playJson,
+        Libs.playJsonExt
       )
     )
 )
