@@ -1,5 +1,7 @@
 package scintuit.data
 
+import com.github.nscala_money.money.Imports._
+
 case class Key(
   name: String,
   value: Option[String],
@@ -14,7 +16,7 @@ case class Key(
 )
 
 case class InstitutionSummary(
-  id: Long,
+  id: InstitutionId,
   name: String,
   homeUrl: Option[String],
   phoneNumber: Option[String],
@@ -22,7 +24,7 @@ case class InstitutionSummary(
 )
 
 case class Institution (
-  id: Long,
+  id: InstitutionId,
   name: String,
   homeUrl: Option[String],
   phoneNumber: Option[String],
@@ -30,6 +32,6 @@ case class Institution (
   address: Address,
   emailAddress: Option[String],
   specialText: Option[String],
-  currencyCode: Option[String],
-  keys: List[Key]
+  currencyCode: Option[CurrencyUnit],
+  keys: Seq[Key]
 )
