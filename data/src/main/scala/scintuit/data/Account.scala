@@ -39,7 +39,7 @@ sealed abstract class InvestmentAccountType extends EnumEntry with Uppercase
 object InvestmentAccountType extends Enum[InvestmentAccountType] {
   val values = findValues
   case object Taxable extends InvestmentAccountType
-  case object `401K` extends InvestmentAccountType
+  case object `401K` extends InvestmentAccountType { override def entryName: String = "$401K"} // Remove when Intuit fixes extraneous $
   case object Brokerage extends InvestmentAccountType
   case object IRA extends InvestmentAccountType
   case object `403B` extends InvestmentAccountType
@@ -261,20 +261,245 @@ final case class CreditAccount(raw: RawCreditAccount) extends Account {
   def statementLateFeeAmount: Option[BigMoney] = toMoney(raw.statementLateFeeAmount)
 }
 
-//case class TemplateRawAccount(
-//  accountId: AccountId,
-//  status: String,
-//  accountNickname: Option[String],
-//  displayPosition: Option[Int],
-//  institutionId: InstitutionId,
-//  description: Option[String],
-//  balanceAmount: Option[BigDecimal],
-//  balanceDate: Option[DateTime],
-//  balancePreviousAmount: Option[BigDecimal],
-//  lastTxnDate: Option[DateTime],
-//  aggrSuccessDate: Option[DateTime],
-//  aggrAttemptDate: Option[DateTime],
-//  aggrStatusCode: Option[ErrorCode],
-//  currencyCode: Option[CurrencyUnit],
-//  institutionLoginId: Option[LoginId]
-//) extends RawAccount
+final case class RawInvestmentAccount(
+  accountId: AccountId,
+  status: AccountStatus,
+  accountNickname: Option[String],
+  displayPosition: Option[Int],
+  institutionId: InstitutionId,
+  description: Option[String],
+  balanceAmount: Option[BigDecimal],
+  balanceDate: Option[DateTime],
+  balancePreviousAmount: Option[BigDecimal],
+  lastTxnDate: Option[DateTime],
+  aggrSuccessDate: Option[DateTime],
+  aggrAttemptDate: Option[DateTime],
+  aggrStatusCode: Option[ErrorCode],
+  currencyCode: Option[CurrencyUnit],
+  institutionLoginId: LoginId,
+  investmentAccountType: Option[InvestmentAccountType],
+  interestMarginBalance: Option[BigDecimal],
+  shortBalance: Option[BigDecimal],
+  availableCashBalance: Option[BigDecimal],
+  currentBalance: Option[BigDecimal],
+  maturityValueAmount: Option[BigDecimal],
+  unvestedBalance: Option[BigDecimal],
+  vestedBalance: Option[BigDecimal],
+  empMatchDeferAmount: Option[BigDecimal],
+  empMatchDeferAmountYtd: Option[BigDecimal],
+  empMatchAmount: Option[BigDecimal],
+  empMatchAmountYtd: Option[BigDecimal],
+  empPretaxContribAmount: Option[BigDecimal],
+  empPretaxContribAmountYtd: Option[BigDecimal],
+  rolloverItd: Option[BigDecimal],
+  cashBalanceAmount: Option[BigDecimal],
+  initialLoanBalance: Option[BigDecimal],
+  loanStartDate: Option[DateTime],
+  currentLoanBalance: Option[BigDecimal],
+  loanRate: Option[BigDecimal]
+) extends RawAccount
+
+final case class InvestmentAccount(raw: RawInvestmentAccount) extends Account {
+  def accountType: Option[InvestmentAccountType] = raw.investmentAccountType
+
+  def cashBalance: Option[BigMoney] = toMoney(raw.cashBalanceAmount)
+  def cashBalanceAvailable: Option[BigMoney] = toMoney(raw.availableCashBalance)
+
+  def interestMarginBalance: Option[BigMoney] = toMoney(raw.interestMarginBalance)
+  def investmentBalance: Option[BigMoney] = toMoney(raw.currentBalance)
+  def shortBalance: Option[BigMoney] = toMoney(raw.shortBalance)
+  def unvestedBalance: Option[BigMoney] = toMoney(raw.unvestedBalance)
+  def vestedBalance: Option[BigMoney] = toMoney(raw.vestedBalance)
+
+  def employerMatch: Option[BigMoney] = toMoney(raw.empMatchAmount)
+  def employerMatchYTD: Option[BigMoney] = toMoney(raw.empMatchAmountYtd)
+  def employerMatchDeferred: Option[BigMoney] = toMoney(raw.empMatchDeferAmount)
+  def employerMatchDeferredYTD: Option[BigMoney] = toMoney(raw.empMatchDeferAmountYtd)
+  def employerPretaxContribution: Option[BigMoney] = toMoney(raw.empPretaxContribAmount)
+  def employerPretaxContributionYTD: Option[BigMoney] = toMoney(raw.empPretaxContribAmountYtd)
+
+  def loanBalance: Option[BigMoney] = toMoney(raw.currentLoanBalance)
+  def loanBalanceInitial: Option[BigMoney] = toMoney(raw.initialLoanBalance)
+  def loanRate: Option[BigDecimal] = raw.loanRate
+  def loanStartDate: Option[DateTime] = raw.loanStartDate
+
+  def maturityValue: Option[BigMoney] = toMoney(raw.maturityValueAmount)
+  def rolloverInterestToDate: Option[BigMoney] = toMoney(raw.rolloverItd)
+}
+
+final case class RawLoanAccount(
+  accountId: AccountId,
+  status: AccountStatus,
+  accountNickname: Option[String],
+  displayPosition: Option[Int],
+  institutionId: InstitutionId,
+  description: Option[String],
+  balanceAmount: Option[BigDecimal],
+  balanceDate: Option[DateTime],
+  balancePreviousAmount: Option[BigDecimal],
+  lastTxnDate: Option[DateTime],
+  aggrSuccessDate: Option[DateTime],
+  aggrAttemptDate: Option[DateTime],
+  aggrStatusCode: Option[ErrorCode],
+  currencyCode: Option[CurrencyUnit],
+  institutionLoginId: LoginId,
+  loanDescription: Option[String],
+  loanType: Option[LoanAccountType],
+  postedDate: Option[DateTime],
+  term: Option[String],
+  lateFeeAmount: Option[BigDecimal],
+  payoffAmount: Option[BigDecimal],
+  payoffAmountDate: Option[DateTime],
+  referenceNumber: Option[String],
+  originalMaturityDate: Option[DateTime],
+  taxPayeeName: Option[String],
+  principalBalance: Option[BigDecimal],
+  escrowBalance: Option[BigDecimal],
+  interestRate: Option[BigDecimal],
+  interestPeriod: Option[String],
+  initialAmount: Option[BigDecimal],
+  initialDate: Option[DateTime],
+  nextPaymentPrincipalAmount: Option[BigDecimal],
+  nextPaymentInterestAmount: Option[BigDecimal],
+  nextPayment: Option[BigDecimal],
+  nextPaymentDate: Option[DateTime],
+  lastPaymentDueDate: Option[DateTime],
+  lastPaymentReceiveDate: Option[DateTime],
+  lastPaymentAmount: Option[BigDecimal],
+  lastPaymentPrincipalAmount: Option[BigDecimal],
+  lastPaymentInterestAmount: Option[BigDecimal],
+  lastPaymentEscrowAmount: Option[BigDecimal],
+  lastPaymentLastFeeAmount: Option[BigDecimal],
+  lastPaymentLateCharge: Option[BigDecimal],
+  principalPaidYTD: Option[BigDecimal],
+  interestPaidYTD: Option[BigDecimal],
+  insurancePaidYTD: Option[BigDecimal],
+  taxPaidYTD: Option[BigDecimal],
+  autoPayEnrolled: Option[Boolean],
+  collateral: Option[String],
+  currentSchool: Option[String],
+  firstPaymentDate: Option[DateTime],
+  firstMortgage: Option[Boolean],
+  loanPaymentFreq: Option[String],
+  paymentMinAmount: Option[BigDecimal],
+  originalSchool: Option[String],
+  recurringPaymentAmount: Option[BigDecimal],
+  lender: Option[String],
+  endingBalanceAmount: Option[BigDecimal],
+  availableBalanceAmount: Option[BigDecimal],
+  loanTermType: Option[LoanTermType],
+  noOfPayments: Option[Int],
+  balloonAmount: Option[BigDecimal],
+  projectedInterest: Option[BigDecimal],
+  interestPaidLtd: Option[BigDecimal],
+  interestRateType: Option[RateType],
+  loanPaymentType: Option[PaymentType],
+  remainingPayments: Option[Int]
+) extends RawAccount
+
+
+final case class LoanAccount(raw: RawLoanAccount) extends Account {
+  def accountType: Option[LoanAccountType] = raw.loanType
+  def descriptionDetails: Option[String] = raw.loanDescription
+  def referenceNumber: Option[String] = raw.referenceNumber
+
+  def initialBalance: Option[BigMoney] = toMoney(raw.initialAmount)
+  def initialDate: Option[DateTime] = raw.initialDate
+  def initialMaturityDate: Option[DateTime] = raw.originalMaturityDate
+
+  def escrowBalance: Option[BigMoney] = toMoney(raw.escrowBalance)
+
+  def loanBalance: Option[BigMoney] = toMoney(raw.endingBalanceAmount)
+  def loanBalanceAvailable: Option[BigMoney] = toMoney(raw.availableBalanceAmount)
+  def loanTermType: Option[LoanTermType] = raw.loanTermType
+
+  def principalBalance: Option[BigMoney] = toMoney(raw.principalBalance)
+  def principalPaidYTD: Option[BigMoney] = toMoney(raw.principalPaidYTD)
+
+  def interestPaidLTD: Option[BigMoney] = toMoney(raw.interestPaidLtd)
+  def interestPaidYTD: Option[BigMoney] = toMoney(raw.interestPaidYTD)
+  def interestProjected: Option[BigMoney] = toMoney(raw.projectedInterest)
+  def interestPeriod: Option[String] = raw.interestPeriod
+  def interestRate: Option[BigDecimal] = raw.interestRate
+  def interestRateType: Option[RateType] = raw.interestRateType
+
+  def insurancePaidYTD: Option[BigMoney] = toMoney(raw.insurancePaidYTD)
+  def taxPaidYTD: Option[BigMoney] = toMoney(raw.taxPaidYTD)
+
+  def payment: Option[BigMoney] = toMoney(raw.nextPayment)
+  def paymentMin: Option[BigMoney] = toMoney(raw.paymentMinAmount)
+  def paymentPrincipal: Option[BigMoney] = toMoney(raw.nextPaymentPrincipalAmount)
+  def paymentInterest: Option[BigMoney] = toMoney(raw.nextPaymentInterestAmount)
+  def paymentDueDate: Option[DateTime] = raw.nextPaymentDate
+
+  def paymentAuto: Option[Boolean] = raw.autoPayEnrolled
+  def paymentFirstDate: Option[DateTime] = raw.firstPaymentDate
+  def paymentFrequency: Option[String] = raw.loanPaymentFreq
+  def paymentType: Option[PaymentType] = raw.loanPaymentType
+  def paymentRecurring: Option[BigMoney] = toMoney(raw.recurringPaymentAmount)
+
+  def paymentPrevious: Option[BigMoney] = toMoney(raw.lastPaymentAmount)
+  def paymentPreviousPrincipal: Option[BigMoney] = toMoney(raw.lastPaymentPrincipalAmount)
+  def paymentPreviousInterest: Option[BigMoney] = toMoney(raw.lastPaymentInterestAmount)
+  def paymentPreviousEscrow: Option[BigMoney] = toMoney(raw.lastPaymentEscrowAmount)
+  def paymentPreviousFee: Option[BigMoney] = toMoney(raw.lastPaymentLastFeeAmount)
+  def paymentPreviousLateFee: Option[BigMoney] = toMoney(raw.lastPaymentLateCharge)
+  def paymentPreviousDueDate: Option[DateTime] = raw.lastPaymentDueDate
+  def paymentPreviousDate: Option[DateTime] = raw.lastPaymentReceiveDate
+
+  def paymentsApplied: Option[Int] = raw.noOfPayments
+  def paymentsRemaining: Option[Int] = raw.remainingPayments
+
+  def payoff: Option[BigMoney] = toMoney(raw.payoffAmount)
+  def payoffDate: Option[DateTime] = raw.payoffAmountDate
+
+  def balloon: Option[BigMoney] = toMoney(raw.balloonAmount)
+  def lateFee: Option[BigMoney] = toMoney(raw.lateFeeAmount)
+
+  def schoolCurrent: Option[String] = raw.currentSchool
+  def schoolOriginal: Option[String] = raw.originalSchool
+
+  def collateral: Option[String] = raw.collateral
+  def lender: Option[String] = raw.lender
+  def term: Option[String] = raw.term
+  def taxPayee: Option[String] = raw.taxPayeeName
+  def firstMortgage: Option[Boolean] = raw.firstMortgage
+
+  def transactionsRefreshDate: Option[DateTime] = raw.postedDate
+}
+
+case class RawRewardAccount(
+  accountId: AccountId,
+  status: AccountStatus,
+  accountNickname: Option[String],
+  displayPosition: Option[Int],
+  institutionId: InstitutionId,
+  description: Option[String],
+  balanceAmount: Option[BigDecimal],
+  balanceDate: Option[DateTime],
+  balancePreviousAmount: Option[BigDecimal],
+  lastTxnDate: Option[DateTime],
+  aggrSuccessDate: Option[DateTime],
+  aggrAttemptDate: Option[DateTime],
+  aggrStatusCode: Option[ErrorCode],
+  currencyCode: Option[CurrencyUnit],
+  institutionLoginId: LoginId,
+  postedDate: Option[DateTime],
+  programType: Option[String],
+  originalBalance: Option[BigDecimal],
+  currentBalance: Option[BigDecimal],
+  rewardQualifyAmountYtd: Option[BigDecimal],
+  rewardLifetimeEarned: Option[BigDecimal],
+  segmentYtd: Option[BigDecimal]
+) extends RawAccount
+
+final case class RewardAccount(raw: RawRewardAccount) extends Account {
+  def rewardType: Option[String] = raw.programType
+
+  def rewardBalance: Option[BigDecimal] = raw.currentBalance
+  def rewardBalanceOriginal: Option[BigDecimal] = raw.originalBalance
+  def rewardQualifyYTD: Option[BigDecimal] = raw.rewardQualifyAmountYtd
+  def rewardEarnedLifetime: Option[BigDecimal] = raw.rewardLifetimeEarned
+
+  def transactionsRefeshDate: Option[DateTime] = raw.postedDate
+}

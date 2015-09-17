@@ -17,7 +17,9 @@ object Common {
 
     libraryDependencies ++= Seq(
       Libs.scalaz,
-      Libs.scalazConcurrent
+      Libs.scalazConcurrent,
+      Libs.nscalaTime,
+      Libs.nscalaMoney
     )
   )
 }
@@ -27,4 +29,8 @@ object ScintuitProject {
 
   def apply(name: String): Project = ScintuitProject(name, file(name))
   def apply(name: String, file: File): Project =  Project(name, file).settings(commonSettings:_*)
+}
+
+object ContribProject {
+  def apply(name: String): Project = ScintuitProject(s"contrib-${name}", file(s"contrib/${name}"))
 }

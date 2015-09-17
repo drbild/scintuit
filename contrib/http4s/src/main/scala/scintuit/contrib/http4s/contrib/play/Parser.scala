@@ -1,4 +1,4 @@
-package scintuit.contrib.play
+package scintuit.contrib.http4s.contrib.play
 
 import jawn._
 import play.api.libs.json._

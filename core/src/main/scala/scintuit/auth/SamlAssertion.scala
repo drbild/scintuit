@@ -4,6 +4,7 @@ import java.security.{PrivateKey, Signature}
 import java.util.{Base64, UUID}
 
 import com.github.nscala_time.time.Imports._
+import scintuit.Customer
 
 import scalaz.Reader
 

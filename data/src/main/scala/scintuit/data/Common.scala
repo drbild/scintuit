@@ -52,4 +52,12 @@ case class ErrorCode(code: String) {
 
 object ErrorCode {
   val Success = "0"
+
+  def extract(codes: ErrorCode*)(error: ErrorInfo): Option[ErrorCode] = error.errorCode match {
+    case Some(ec) if codes.contains(ec) => Some(ec)
+    case _ => None
+  }
+
+  def extractS(codes: String*)(error: ErrorInfo): Option[ErrorCode] =
+    extract((codes map ErrorCode.apply): _*)(error)
 }

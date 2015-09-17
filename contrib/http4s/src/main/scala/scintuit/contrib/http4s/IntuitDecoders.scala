@@ -6,7 +6,7 @@ import scintuit.auth.OAuthToken
 import scalaz.Scalaz._
 
 trait IntuitDecoders {
-  implicit def oauthTokenIntityDecoder(implicit defaultCharset: Charset = DefaultCharset): EntityDecoder[OAuthToken] =
+  implicit def oauthTokenIntuitDecoder(implicit defaultCharset: Charset = DefaultCharset): EntityDecoder[OAuthToken] =
     UrlForm.entityDecoder.flatMapR(form => {
       val token = form.getFirst("oauth_token").toSuccess("missing oauth_token".point[List])
       val secret = form.getFirst("oauth_token_secret").toSuccess("missing oauth_token_secret".point[List])

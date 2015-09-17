@@ -10,37 +10,35 @@ case class Credentials(
 case class ChallengeSession (
   session: ChallengeSessionId,
   node: ChallengeNodeId,
-  challenges: List[Challenge]
+  challenges: Vector[Challenge]
 )
 
 // ------------------- Challenge -------------------
-sealed trait Challenge
+case class Choice(text: String, value: String)
+
+sealed trait Challenge {
+  val choices: Option[Vector[Choice]]
+}
 
 case class TextChallenge(
-  text: String
+  text: String,
+  choices: Option[Vector[Choice]]
 ) extends Challenge
 
 case class ImageChallenge(
-  image: Base64Binary
+  text: String,
+  image: Base64Binary,
+  choices: Option[Vector[Choice]]
 ) extends Challenge
-
-// ---------------- ChallengeAnswer -----------------
-sealed trait ChallengeAnswer
-
-case class TextChallengeAnswer (
-  text: String,
-  value: String
-) extends ChallengeAnswer
-
-case class ImageChallengeAnswer (
-  text: String,
-  value: String
-) extends ChallengeAnswer
 
 // ====================== Responses ======================
 sealed trait AddAccountsResponse
 sealed trait UpdateLoginResponse
 
-case class AccountsAdded(accounts: Seq[Account]) extends AddAccountsResponse
+case class AccountsAdded(accounts: Vector[Account]) extends AddAccountsResponse
 case object LoginUpdated extends UpdateLoginResponse
 case class ChallengeIssued(challengeSession: ChallengeSession) extends AddAccountsResponse with UpdateLoginResponse
+object ChallengeIssued {
+  def apply(session: ChallengeSessionId, node: ChallengeNodeId, challenges: Vector[Challenge]): ChallengeIssued =
+    ChallengeIssued(ChallengeSession(session, node, challenges))
+}

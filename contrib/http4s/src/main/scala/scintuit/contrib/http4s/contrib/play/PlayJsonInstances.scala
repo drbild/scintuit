@@ -1,10 +1,9 @@
-package scintuit.contrib.play
+package scintuit.contrib.http4s.contrib.play
 
 import org.http4s._
 import org.http4s.headers.`Content-Type`
 import org.http4s.jawn.jawnDecoder
 import play.api.libs.json.{JsValue, Json, Reads, Writes}
-
 import Parser.facade
 
 trait PlayJsonInstances {
@@ -15,7 +14,7 @@ trait PlayJsonInstances {
       reader.reads(json).fold(
         invalid = errors =>
           DecodeResult.failure {
-            println(Json.prettyPrint(json));
+            println(Json.prettyPrint(json))
             errors.headOption.fold(ParseFailure("Unknown error", "Unknown error")) { case (path, error) =>
               ParseFailure(error.mkString(" "), path.toString)
             }

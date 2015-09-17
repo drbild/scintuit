@@ -15,7 +15,7 @@ trait CommonFormats {
   implicit val errorTypeFormat: Format[ErrorType] = EnumFormats.formats(ErrorType, false)
   implicit val errorCodeFormat: Format[ErrorCode] =
     Format(__.read[String].map(ErrorCode(_)), Writes(ec => JsString(ec.code)))
-  implicit val errorInfoFromat: Format[ErrorInfo] = Json.format[ErrorInfo]
+  implicit val errorInfoFormat: Format[ErrorInfo] = Json.format[ErrorInfo]
   implicit val statusFormat: Format[Status] = Json.format[Status]
 
 }
