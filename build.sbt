@@ -18,6 +18,8 @@ lazy val core = (
         Libs.enumeratum,
         Libs.enumeratumPlayJson,
         Libs.http4sClient,
+        Libs.http4sJawn,
+        Libs.jawnPlay,
         Libs.nscalaTime,
         Libs.nscalaMoney,
         Libs.nscalaMoneyPlayJson,

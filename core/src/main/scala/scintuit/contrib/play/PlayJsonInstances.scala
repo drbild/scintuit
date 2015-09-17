@@ -14,17 +14,18 @@ trait PlayJsonInstances {
     json.flatMapR { json =>
       reader.reads(json).fold(
         invalid = errors =>
-          DecodeResult.failure(
+          DecodeResult.failure {
+            println(Json.prettyPrint(json));
             errors.headOption.fold(ParseFailure("Unknown error", "Unknown error")) { case (path, error) =>
               ParseFailure(error.mkString(" "), path.toString)
             }
-          ),
+          },
         valid = (a) => DecodeResult.success(a)
       )
     }
 
   implicit lazy val jsonEncoder: EntityEncoder[JsValue] =
-    EntityEncoder[String].contramap[JsValue] { json =>
+    EntityEncoder.stringEncoder(Charset.`UTF-8`).contramap[JsValue] { json =>
       Json.prettyPrint(json)
     }.withContentType(`Content-Type`(MediaType.`application/json`))
 
