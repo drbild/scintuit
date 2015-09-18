@@ -29,9 +29,10 @@ object AccountStatus extends Enum[AccountStatus] {
   case object Active extends AccountStatus
   case object Inactive extends AccountStatus
 }
-
 // ================================ Account Types ================================
-sealed abstract class BankingAccountType extends EnumEntry with Uppercase
+sealed trait AccountType extends EnumEntry
+
+sealed abstract class BankingAccountType extends AccountType with Uppercase
 object BankingAccountType extends Enum[BankingAccountType] {
   val values = findValues
   case object Checking extends BankingAccountType
@@ -43,7 +44,7 @@ object BankingAccountType extends Enum[BankingAccountType] {
   case object Overdraft extends BankingAccountType
 }
 
-sealed abstract class CreditAccountType extends EnumEntry with Uppercase
+sealed abstract class CreditAccountType extends AccountType with Uppercase
 object CreditAccountType extends Enum[CreditAccountType] {
   val values = findValues
   case object CreditCard extends CreditAccountType
@@ -51,7 +52,7 @@ object CreditAccountType extends Enum[CreditAccountType] {
   case object Other extends CreditAccountType
 }
 
-sealed abstract class InvestmentAccountType extends EnumEntry with Uppercase
+sealed abstract class InvestmentAccountType extends AccountType with Uppercase
 object InvestmentAccountType extends Enum[InvestmentAccountType] {
   val values = findValues
   case object Taxable extends InvestmentAccountType
@@ -69,7 +70,7 @@ object InvestmentAccountType extends Enum[InvestmentAccountType] {
   case object Other extends InvestmentAccountType
 }
 
-sealed abstract class LoanAccountType extends EnumEntry with Uppercase
+sealed abstract class LoanAccountType extends AccountType with Uppercase
 object LoanAccountType extends Enum[LoanAccountType] {
   val values = findValues
   case object Loan extends LoanAccountType
@@ -138,6 +139,7 @@ sealed trait Account {
   def id: AccountId = raw.accountId
   def institutionId: InstitutionId = raw.institutionId
   def loginId: LoginId = raw.institutionLoginId
+  def accountType: Option[AccountType]
 
   def nickname: Option[String] = raw.accountNickname
   def description: Option[String] = raw.description
@@ -510,6 +512,8 @@ case class RawRewardAccount(
 ) extends RawAccount
 
 final case class RewardAccount(raw: RawRewardAccount) extends Account {
+  // Should rewardType actually be accountType
+  def accountType: Option[AccountType] = None
   def rewardType: Option[String] = raw.programType
 
   def rewardBalance: Option[BigDecimal] = raw.currentBalance
