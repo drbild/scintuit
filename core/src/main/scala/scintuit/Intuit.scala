@@ -21,7 +21,7 @@ import scintuit.data._
 
 import scalaz._
 
-object IntuitApi {
+object Intuit {
   /**
    * ADT for Intuit API operations
    */

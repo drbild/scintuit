@@ -24,8 +24,8 @@ import org.http4s.Status._
 import org.http4s.client.Client
 import org.http4s.{DateTime => _, _}
 import play.api.libs.json._
-import scintuit.IntuitApi.IntuitOp._
-import scintuit.IntuitApi._
+import scintuit.Intuit.IntuitOp._
+import scintuit.Intuit._
 import scintuit.auth.{IntuitConfig, OAuthConsumer, OAuthToken}
 import scintuit.contrib.http4s.contrib.play.PlayJsonInstances
 import scintuit.contrib.play.all._
