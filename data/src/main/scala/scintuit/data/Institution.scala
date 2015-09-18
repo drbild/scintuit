@@ -37,7 +37,12 @@ case class InstitutionSummary(
   homeUrl: Option[String],
   phoneNumber: Option[String],
   virtual: Option[Boolean]
-)
+) {
+  /**
+   * @return the virtual property if defined, otherwise false
+   */
+  def virtualF: Boolean =  virtual getOrElse false
+}
 
 case class Institution (
   id: InstitutionId,
@@ -50,4 +55,9 @@ case class Institution (
   specialText: Option[String],
   currencyCode: Option[CurrencyUnit],
   keys: Seq[Key]
-)
+) {
+  /**
+   * @return the virtual property if defined, otherwise false
+   */
+  def virtualF: Boolean =  virtual getOrElse false
+}
