@@ -114,7 +114,10 @@ object Interpreter extends PlayJsonInstances with ApiTransforms with ToIdOps {
             handlingAll(get(s"institutions")).as[Vector[InstitutionSummary]](decode(listInstitutionsT))
 
           case GetInstitution(id) =>
-            handlingAll(get(s"institutions/${id}")).as[Institution](decode(getInstitutionT))
+            handlingNone(get(s"institutions/${id}")) flatMap {
+              case Successful(res) => res.as[Institution](decode(getInstitutionT)) map (Some(_))
+              case NotFound(res) => None.point[Task]
+            }
 
           case ListCustomerAccounts =>
             handlingAll(get(s"accounts")).as[Vector[Account]](decode(listAccountsT))

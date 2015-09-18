@@ -30,7 +30,7 @@ object Intuit {
   object IntuitOp {
     // ---------------------------- Institutions ----------------------------
     case object ListInstitutions extends IntuitOp[Vector[InstitutionSummary]]
-    case class GetInstitution(id: InstitutionId) extends IntuitOp[Institution]
+    case class GetInstitution(id: InstitutionId) extends IntuitOp[Option[Institution]]
 
     // ------------------------------- Logins -------------------------------
     case class AddAccounts(
@@ -86,7 +86,7 @@ object Intuit {
 
   // ---------------------------- Institutions ----------------------------
   val institutions: IntuitIO[Vector[InstitutionSummary]] = Free.liftFC(ListInstitutions)
-  def institution(id: Long): IntuitIO[Institution] = Free.liftFC(GetInstitution(id))
+  def institution(id: Long): IntuitIO[Option[Institution]] = Free.liftFC(GetInstitution(id))
 
   // ------------------------------- Logins -------------------------------
   def addAccounts(id: InstitutionId, credentials: Seq[Credentials]): IntuitIO[LoginError \/ AddAccountsResponse] =
