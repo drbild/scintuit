@@ -28,14 +28,15 @@ case class SamlAssertion(body: String)
 
 object SamlAssertion {
 
-  def apply(key: PrivateKey, provider: SamlProvider, customer: Customer): SamlAssertion = {
+  def apply[C: Customer](key: PrivateKey, provider: SamlProvider, customer: C): SamlAssertion = {
     val now = DateTime.now(DateTimeZone.UTC)
     val ref = UUID.randomUUID.toString.replace("-", "")
-    SamlAssertion(build(Params(now, ref, key, provider, customer)))
+    SamlAssertion(build(Params(now, ref, key, provider, implicitly[Customer[C]].name(customer))))
   }
 
   type Assertion = String
   type Digest = String
+  type Name = String
   type SignedInfo = String
   type SignatureValue = String
   type Signature = String
@@ -45,7 +46,7 @@ object SamlAssertion {
     referenceId: String,
     key: PrivateKey,
     issuer: SamlProvider,
-    name: Customer
+    name: Name
   )
 
   private def build =

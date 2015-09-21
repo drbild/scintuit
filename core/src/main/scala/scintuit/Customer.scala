@@ -16,6 +16,15 @@
 
 package scintuit
 
-case class Customer(id: String) {
-  override def toString: String = id
+/**
+ * Typeclass for objects that represent customers for the Intuit API.
+ */
+trait Customer[T] {
+  def name(customer: T): String
+}
+
+object Customer {
+  implicit object StringCustomer extends Customer[String] {
+    def name(customer: String): String = customer
+  }
 }

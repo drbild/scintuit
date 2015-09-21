@@ -28,7 +28,7 @@ import scalaz.concurrent.Task
 object OAuth extends IntuitDecoders {
   val signing = Signing.apply _
 
-  def tokenForCustomer(client: Client, config: IntuitConfig, customer: Customer): Task[OAuthToken] = {
+  def tokenForCustomer[C: Customer](client: Client, config: IntuitConfig, customer: C): Task[OAuthToken] = {
     val samlUri = uri("https://oauth.intuit.com/oauth/v1/get_access_token_by_saml")
     val request = Request(Method.POST, samlUri)
     .putHeaders(Header("Authorization", s"""OAuth oauth_consumer_key="${config.oauthConsumer.key}""""))

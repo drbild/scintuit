@@ -208,7 +208,7 @@ object Interpreter extends PlayJsonInstances with ApiTransforms with ToIdOps {
     def apply[A](ma: IntuitIO[A]): Task[A] = scope flatMap (transK(ma).run(_))
   }
 
-  def trans(client: Client, config: IntuitConfig, customer: Customer): IntuitIO ~> Task = {
+  def trans[C: Customer](client: Client, config: IntuitConfig, customer: C): IntuitIO ~> Task = {
     val scope = OAuth.tokenForCustomer(client, config, customer) map (Scope(client, config.oauthConsumer, _))
     trans(scope)
   }
