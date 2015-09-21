@@ -132,8 +132,8 @@ object Interpreter extends PlayJsonInstances with ApiTransforms with ToIdOps {
             val uri = (BASE / s"institutions/${id}/logins")
             val req = post(uri).withBody(credentials)(encode(addAccountsT))
             handlingNone(req) flatMap {
-              case Successful(res) => res.as[Vector[Account]](decode(listAccountsT)) map (AccountsAdded(_).right)
-              case Unauthorized(res) => decodeChallengeIssued(res) map (_.right)//res.as[Vector[Challenge]](decode(challengeIssuedT)) flatMap
+              case Successful(res) => res.as[Vector[Account]](decode(listAccountsT)) map (_.right)
+              case Unauthorized(res) => decodeChallengeIssued(res) map (_.left)
               case res => res.as[ErrorInfo](decode(errorInfoT)) flatMap {
                 case InvalidCredentials(code) => Task.now(InvalidCredentials(code).left)
                 case InterventionRequired(code) => Task.now(InterventionRequired(code).left)
@@ -146,8 +146,8 @@ object Interpreter extends PlayJsonInstances with ApiTransforms with ToIdOps {
             val req = post(uri).withBody(answers)(encode(addAccountsChallengeT))
               .putHeaders(Header("challengeSessionId", session), Header("challengeNodeId", node))
             handlingNone(req) flatMap {
-              case Successful(res) => res.as[Vector[Account]](decode(listAccountsT)) map (AccountsAdded(_).right)
-              case Unauthorized(res) => decodeChallengeIssued(res) map (_.right)//res.as[Vector[Challenge]](decode(challengeIssuedT)) flatMap
+              case Successful(res) => res.as[Vector[Account]](decode(listAccountsT)) map (_.right)
+              case Unauthorized(res) => decodeChallengeIssued(res) map (_.left)
               case res => res.as[ErrorInfo](decode(errorInfoT)) flatMap {
                 case IncorrectChallengeAnswer(code) => Task.now(IncorrectChallengeAnswer(code).left)
                 case InterventionRequired(code) => Task.now(InterventionRequired(code).left)
@@ -171,8 +171,8 @@ object Interpreter extends PlayJsonInstances with ApiTransforms with ToIdOps {
             val uri = (BASE / s"logins/${id}") +? ("refresh", "true")
             val req = put(uri).withBody(credentials)(encode(addAccountsT))
             handlingNone(req) flatMap {
-              case Successful(res) => Task.now(LoginUpdated.right)
-              case Unauthorized(res) => decodeChallengeIssued(res) map (_.right)
+              case Successful(res) => Task.now(().right)
+              case Unauthorized(res) => decodeChallengeIssued(res) map (_.left)
               case res => res.as[ErrorInfo](decode(errorInfoT)) flatMap {
                 case InvalidCredentials(code) => Task.now(InvalidCredentials(code).left)
                 case InterventionRequired(code) => Task.now(InterventionRequired(code).left)
@@ -185,8 +185,8 @@ object Interpreter extends PlayJsonInstances with ApiTransforms with ToIdOps {
             val req = put(uri).withBody(answers)(encode(addAccountsChallengeT))
               .putHeaders(Header("challengeSessionId", session), Header("challengeNodeId", node))
             handlingNone(req) flatMap {
-              case Successful(res) => Task.now(LoginUpdated.right)
-              case Unauthorized(res) => decodeChallengeIssued(res) map (_.right)
+              case Successful(res) => Task.now(().right)
+              case Unauthorized(res) => decodeChallengeIssued(res) map (_.left)
               case res => res.as[ErrorInfo](decode(errorInfoT)) flatMap {
                 case IncorrectChallengeAnswer(code) => Task.now(IncorrectChallengeAnswer(code).left)
                 case InterventionRequired(code) => Task.now(InterventionRequired(code).left)

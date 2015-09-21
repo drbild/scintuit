@@ -47,13 +47,30 @@ case class ImageChallenge(
   choices: Option[Vector[Choice]]
 ) extends Challenge
 
-// ====================== Responses ======================
-sealed trait AddAccountsResponse
-sealed trait UpdateLoginResponse
+// ====================== Errors ======================
+sealed trait LoginError extends Exception
+sealed trait ChallengeError extends Exception
 
-case class AccountsAdded(accounts: Vector[Account]) extends AddAccountsResponse
-case object LoginUpdated extends UpdateLoginResponse
-case class ChallengeIssued(challengeSession: ChallengeSession) extends AddAccountsResponse with UpdateLoginResponse
+case class InvalidCredentials(errorCode: ErrorCode) extends LoginError
+case class IncorrectChallengeAnswer(errorCode: ErrorCode) extends ChallengeError
+
+case class InterventionRequired(errorCode: ErrorCode) extends LoginError with ChallengeError
+case class ChallengeIssued(challengeSession: ChallengeSession) extends LoginError with ChallengeError
+
+object InvalidCredentials {
+  def unapply(error: ErrorInfo): Option[ErrorCode] =
+    ErrorCode.extractS("103")(error)
+}
+
+object IncorrectChallengeAnswer {
+  def unapply(error: ErrorInfo): Option[ErrorCode] =
+    ErrorCode.extractS("187")(error)
+}
+
+object InterventionRequired {
+  def unapply(error: ErrorInfo): Option[ErrorCode] =
+    ErrorCode.extractS("101", "108", "109", "179")(error)
+}
 object ChallengeIssued {
   def apply(session: ChallengeSessionId, node: ChallengeNodeId, challenges: Vector[Challenge]): ChallengeIssued =
     ChallengeIssued(ChallengeSession(session, node, challenges))

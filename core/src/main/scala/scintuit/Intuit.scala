@@ -35,23 +35,23 @@ object Intuit {
     // ------------------------------- Logins -------------------------------
     case class AddAccounts(
       id: InstitutionId,
-      credentials: Seq[Credentials]) extends IntuitOp[LoginError \/ AddAccountsResponse]
+      credentials: Seq[Credentials]) extends IntuitOp[LoginError \/ Vector[Account]]
 
     case class AddAccountsChallenge(
       id: InstitutionId,
       sessionId: ChallengeSessionId,
       nodeId: ChallengeNodeId,
-      answers: Seq[ChallengeAnswer]) extends IntuitOp[ChallengeError \/ AddAccountsResponse]
+      answers: Seq[ChallengeAnswer]) extends IntuitOp[ChallengeError \/ Vector[Account]]
 
     case class UpdateLogin(
       id: LoginId,
-      credentials: Seq[Credentials]) extends IntuitOp[LoginError \/ UpdateLoginResponse]
+      credentials: Seq[Credentials]) extends IntuitOp[LoginError \/ Unit]
 
     case class UpdateLoginChallenge(
       id: LoginId,
       sessionId: ChallengeSessionId,
       nodeId: ChallengeNodeId,
-      answers: Seq[ChallengeAnswer]) extends IntuitOp[ChallengeError \/ UpdateLoginResponse]
+      answers: Seq[ChallengeAnswer]) extends IntuitOp[ChallengeError \/ Unit]
 
     // ------------------------------ Accounts ------------------------------
     case class GetAccount(id: AccountId) extends IntuitOp[Account]
@@ -89,24 +89,24 @@ object Intuit {
   def institution(id: Long): IntuitIO[Option[Institution]] = Free.liftFC(GetInstitution(id))
 
   // ------------------------------- Logins -------------------------------
-  def addAccounts(id: InstitutionId, credentials: Seq[Credentials]): IntuitIO[LoginError \/ AddAccountsResponse] =
+  def addAccounts(id: InstitutionId, credentials: Seq[Credentials]): IntuitIO[LoginError \/ Vector[Account]] =
     Free.liftFC(AddAccounts(id, credentials))
 
   def addAccounts(
     id: InstitutionId,
     sessionId: ChallengeSessionId,
     nodeId: ChallengeNodeId,
-    answers: Seq[ChallengeAnswer]): IntuitIO[ChallengeError \/ AddAccountsResponse] =
+    answers: Seq[ChallengeAnswer]): IntuitIO[ChallengeError \/ Vector[Account]] =
     Free.liftFC(AddAccountsChallenge(id, sessionId, nodeId, answers))
 
-  def updateLogin(id: LoginId, credentials: Seq[Credentials]): IntuitIO[LoginError \/ UpdateLoginResponse] =
+  def updateLogin(id: LoginId, credentials: Seq[Credentials]): IntuitIO[LoginError \/ Unit] =
     Free.liftFC(UpdateLogin(id, credentials))
 
   def updateLogin(
     id: InstitutionId,
     sessionId: ChallengeSessionId,
     nodeId: ChallengeNodeId,
-    answers: Seq[ChallengeAnswer]): IntuitIO[ChallengeError \/ UpdateLoginResponse] =
+    answers: Seq[ChallengeAnswer]): IntuitIO[ChallengeError \/ Unit] =
     Free.liftFC(UpdateLoginChallenge(id, sessionId, nodeId, answers))
 
   // ------------------------------ Accounts ------------------------------
