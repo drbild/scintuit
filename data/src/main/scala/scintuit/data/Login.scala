@@ -49,13 +49,12 @@ case class ImageChallenge(
 
 // ====================== Errors ======================
 sealed trait LoginError extends Exception
-sealed trait ChallengeError extends Exception
 
 case class InvalidCredentials(errorCode: ErrorCode) extends LoginError
-case class IncorrectChallengeAnswer(errorCode: ErrorCode) extends ChallengeError
+case class IncorrectChallengeAnswer(errorCode: ErrorCode) extends LoginError
 
-case class InterventionRequired(errorCode: ErrorCode) extends LoginError with ChallengeError
-case class ChallengeIssued(challengeSession: ChallengeSession) extends LoginError with ChallengeError
+case class InterventionRequired(errorCode: ErrorCode) extends LoginError
+case class ChallengeIssued(challengeSession: ChallengeSession) extends LoginError
 
 object InvalidCredentials {
   def unapply(error: ErrorInfo): Option[ErrorCode] =
