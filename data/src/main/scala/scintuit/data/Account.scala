@@ -397,6 +397,7 @@ final case class RawLoanAccount(
   collateral: Option[String],
   currentSchool: Option[String],
   firstPaymentDate: Option[DateTime],
+  guarantor: Option[String],
   firstMortgage: Option[Boolean],
   loanPaymentFreq: Option[String],
   paymentMinAmount: Option[BigDecimal],
@@ -478,6 +479,7 @@ final case class LoanAccount(raw: RawLoanAccount) extends Account {
   def schoolOriginal: Option[String] = raw.originalSchool
 
   def collateral: Option[String] = raw.collateral
+  def guarantor: Option[String] = raw.guarantor
   def lender: Option[String] = raw.lender
   def term: Option[String] = raw.term
   def taxPayee: Option[String] = raw.taxPayeeName
