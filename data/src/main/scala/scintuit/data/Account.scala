@@ -160,6 +160,8 @@ sealed trait Account {
   def aggregationStatus: Option[ErrorCode] = raw.aggrStatusCode
   def aggregationAttemptDate: Option[DateTime] = raw.aggrAttemptDate
   def aggregationSuccessDate: Option[DateTime] = raw.aggrSuccessDate
+
+  def maskNumber(f: String => String): Account
 }
 
 final case class RawBankingAccount(
@@ -213,6 +215,9 @@ final case class BankingAccount(raw: RawBankingAccount) extends Account {
   def maturityAmount: Option[BigMoney] = toMoney(raw.maturityAmount)
 
   def transactionsRefreshDate: Option[DateTime] = raw.postedDate
+
+  def maskNumber(f: String => String): BankingAccount =
+    BankingAccount(raw.copy(accountNumber = f(raw.accountNumber)))
 }
 
 final case class RawCreditAccount(
@@ -282,6 +287,9 @@ final case class CreditAccount(raw: RawCreditAccount) extends Account {
   def statementPurchaseAmount: Option[BigMoney] = toMoney(raw.statementPurchaseAmount)
   def statementFinanceAmount: Option[BigMoney] = toMoney(raw.statementFinanceAmount)
   def statementLateFeeAmount: Option[BigMoney] = toMoney(raw.statementLateFeeAmount)
+
+  def maskNumber(f: String => String): CreditAccount =
+    CreditAccount(raw.copy(accountNumber = f(raw.accountNumber)))
 }
 
 final case class RawInvestmentAccount(
@@ -349,6 +357,9 @@ final case class InvestmentAccount(raw: RawInvestmentAccount) extends Account {
 
   def maturityValue: Option[BigMoney] = toMoney(raw.maturityValueAmount)
   def rolloverInterestToDate: Option[BigMoney] = toMoney(raw.rolloverItd)
+
+  def maskNumber(f: String => String): InvestmentAccount =
+    InvestmentAccount(raw.copy(accountNumber = f(raw.accountNumber)))
 }
 
 final case class RawLoanAccount(
@@ -493,6 +504,9 @@ final case class LoanAccount(raw: RawLoanAccount) extends Account {
   def firstMortgage: Option[Boolean] = raw.firstMortgage
 
   def transactionsRefreshDate: Option[DateTime] = raw.postedDate
+
+  def maskNumber(f: String => String): LoanAccount =
+    LoanAccount(raw.copy(accountNumber = f(raw.accountNumber)))
 }
 
 case class RawRewardAccount(
@@ -532,4 +546,7 @@ final case class RewardAccount(raw: RawRewardAccount) extends Account {
   def rewardEarnedLifetime: Option[BigDecimal] = raw.rewardLifetimeEarned
 
   def transactionsRefeshDate: Option[DateTime] = raw.postedDate
+
+  def maskNumber(f: String => String): RewardAccount =
+    RewardAccount(raw.copy(accountNumber = f(raw.accountNumber)))
 }
