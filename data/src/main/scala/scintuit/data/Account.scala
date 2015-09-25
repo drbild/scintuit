@@ -115,6 +115,7 @@ object LoanTermType extends Enum[LoanTermType] {
 sealed trait RawAccount {
   val accountId: AccountId
   val status: AccountStatus
+  val accountNumber: String
   val accountNickname: Option[String]
   val displayPosition: Option[Int]
   val institutionId: InstitutionId
@@ -139,9 +140,11 @@ sealed trait Account {
   def id: AccountId = raw.accountId
   def institutionId: InstitutionId = raw.institutionId
   def loginId: LoginId = raw.institutionLoginId
+  def number: String = raw.accountNumber
   def accountType: Option[AccountType]
 
   def nickname: Option[String] = raw.accountNickname
+
   def description: Option[String] = raw.description
   def currency: Option[CurrencyUnit] = raw.currencyCode
 
@@ -162,6 +165,7 @@ sealed trait Account {
 final case class RawBankingAccount(
   accountId: AccountId,
   status: AccountStatus,
+  accountNumber: String,
   accountNickname: Option[String],
   displayPosition: Option[Int],
   institutionId: InstitutionId,
@@ -214,6 +218,7 @@ final case class BankingAccount(raw: RawBankingAccount) extends Account {
 final case class RawCreditAccount(
   accountId: AccountId,
   status: AccountStatus,
+  accountNumber: String,
   accountNickname: Option[String],
   displayPosition: Option[Int],
   institutionId: InstitutionId,
@@ -282,6 +287,7 @@ final case class CreditAccount(raw: RawCreditAccount) extends Account {
 final case class RawInvestmentAccount(
   accountId: AccountId,
   status: AccountStatus,
+  accountNumber: String,
   accountNickname: Option[String],
   displayPosition: Option[Int],
   institutionId: InstitutionId,
@@ -348,6 +354,7 @@ final case class InvestmentAccount(raw: RawInvestmentAccount) extends Account {
 final case class RawLoanAccount(
   accountId: AccountId,
   status: AccountStatus,
+  accountNumber: String,
   accountNickname: Option[String],
   displayPosition: Option[Int],
   institutionId: InstitutionId,
@@ -491,6 +498,7 @@ final case class LoanAccount(raw: RawLoanAccount) extends Account {
 case class RawRewardAccount(
   accountId: AccountId,
   status: AccountStatus,
+  accountNumber: String,
   accountNickname: Option[String],
   displayPosition: Option[Int],
   institutionId: InstitutionId,
