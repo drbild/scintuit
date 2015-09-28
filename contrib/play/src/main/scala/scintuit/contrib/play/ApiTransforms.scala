@@ -16,10 +16,9 @@
 
 package scintuit.contrib.play
 
-import play.api.data.validation.ValidationError
 import play.api.libs.json._
 
-object apiTransforms extends ApiTransforms
+object ApiTransforms extends ApiTransforms
 
 trait ApiTransforms {
 
