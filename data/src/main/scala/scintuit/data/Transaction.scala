@@ -198,7 +198,7 @@ sealed trait RawTransaction {
   val `type`: Option[String]
   val valueType: Option[String]
   val currencyRate: Option[BigDecimal]
-  val originalCurrency: Option[Boolean]
+  val currencyOriginal: Option[Boolean]
   val postedDate: Option[DateTime]
   val userDate: Option[DateTime]
   val availableDate: Option[DateTime]
@@ -220,7 +220,7 @@ sealed trait Transaction {
 
   def currency: Option[CurrencyUnit] = raw.currencyType
   def currencyRate: Option[BigDecimal] = raw.currencyRate
-  def currencyConverted: Option[Boolean] = raw.originalCurrency
+  def currencyConverted: Option[Boolean] = raw.currencyOriginal
 
   def amount: Option[BigMoney] = toMoney(raw.amount)
   def pending: Option[Boolean] = raw.pending
@@ -261,7 +261,7 @@ final case class RawBankingTransaction(
   `type`: Option[String],
   valueType: Option[String],
   currencyRate: Option[BigDecimal],
-  originalCurrency: Option[Boolean],
+  currencyOriginal: Option[Boolean],
   postedDate: Option[DateTime],
   userDate: Option[DateTime],
   availableDate: Option[DateTime],
@@ -290,7 +290,7 @@ final case class RawCreditTransaction(
   `type`: Option[String],
   valueType: Option[String],
   currencyRate: Option[BigDecimal],
-  originalCurrency: Option[Boolean],
+  currencyOriginal: Option[Boolean],
   postedDate: Option[DateTime],
   userDate: Option[DateTime],
   availableDate: Option[DateTime],
@@ -319,7 +319,7 @@ final case class RawRewardTransaction(
   `type`: Option[String],
   valueType: Option[String],
   currencyRate: Option[BigDecimal],
-  originalCurrency: Option[Boolean],
+  currencyOriginal: Option[Boolean],
   postedDate: Option[DateTime],
   userDate: Option[DateTime],
   availableDate: Option[DateTime],
@@ -348,7 +348,7 @@ final case class RawLoanTransaction(
   `type`: Option[String],
   valueType: Option[String],
   currencyRate: Option[BigDecimal],
-  originalCurrency: Option[Boolean],
+  currencyOriginal: Option[Boolean],
   postedDate: Option[DateTime],
   userDate: Option[DateTime],
   availableDate: Option[DateTime],
@@ -395,7 +395,7 @@ final case class RawInvestmentBankingTransaction(
   `type`: Option[String],
   valueType: Option[String],
   currencyRate: Option[BigDecimal],
-  originalCurrency: Option[Boolean],
+  currencyOriginal: Option[Boolean],
   postedDate: Option[DateTime],
   userDate: Option[DateTime],
   availableDate: Option[DateTime],
@@ -431,7 +431,7 @@ final case class RawInvestmentTransaction(
   `type`: Option[String],
   valueType: Option[String],
   currencyRate: Option[BigDecimal],
-  originalCurrency: Option[Boolean],
+  currencyOriginal: Option[Boolean],
   postedDate: Option[DateTime],
   userDate: Option[DateTime],
   availableDate: Option[DateTime],
@@ -534,7 +534,7 @@ Transaction {
   def unitAction: Option[String] = raw.unitAction
   def unitType: Option[String] = raw.unitType
 
-  def contributionPriorYear = raw.priorYearContribution
+  def contributionPriorYear: Option[Boolean] = raw.priorYearContribution
   def costBasisAverage: Option[BigMoney] = toMoney(raw.averageCostBasisAmount)
   def sharesPerContract: Option[Long] = raw.sharesPerContract
 
