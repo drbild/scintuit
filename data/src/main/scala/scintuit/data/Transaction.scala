@@ -224,7 +224,7 @@ sealed trait Transaction {
 
   def amount: Option[BigMoney] = toMoney(raw.amount)
   def pending: Option[Boolean] = raw.pending
-  def string: Option[String] = raw.`type`
+  def `type`: Option[String] = raw.`type`
 
   def memo: Option[String] = raw.memo
   def categorization: Categorization = Categorization(raw.categorization)
