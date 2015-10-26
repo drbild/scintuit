@@ -205,7 +205,7 @@ sealed trait RawTransaction {
   val amount: Option[BigDecimal]
   val runningBalanceAmount: Option[BigDecimal]
   val pending: Option[Boolean]
-  //val categorization: RawCategorization
+  val categorization: RawCategorization
 }
 
 sealed trait Transaction {
@@ -227,7 +227,7 @@ sealed trait Transaction {
   def string: Option[String] = raw.`type`
 
   def memo: Option[String] = raw.memo
-  //def categorization: Categorization = Categorization(raw.categorization)
+  def categorization: Categorization = Categorization(raw.categorization)
   def payeeId: Option[String] = raw.payeeId
   def payeeName: Option[String] = raw.payeeName
   def payeeNameExtended: Option[String] = raw.extendedPayeeName
@@ -267,8 +267,8 @@ final case class RawBankingTransaction(
   availableDate: Option[DateTime],
   amount: Option[BigDecimal],
   runningBalanceAmount: Option[BigDecimal],
-  pending: Option[Boolean]
-  //categorization: RawCategorization
+  pending: Option[Boolean],
+  categorization: RawCategorization
 ) extends RawTransaction
 
 final case class BankingTransaction(raw: RawBankingTransaction) extends Transaction
@@ -296,8 +296,8 @@ final case class RawCreditTransaction(
   availableDate: Option[DateTime],
   amount: Option[BigDecimal],
   runningBalanceAmount: Option[BigDecimal],
-  pending: Option[Boolean]
-  //categorization: RawCategorization
+  pending: Option[Boolean],
+  categorization: RawCategorization
 ) extends RawTransaction
 
 final case class CreditTransaction(raw: RawCreditTransaction) extends Transaction
@@ -325,8 +325,8 @@ final case class RawRewardTransaction(
   availableDate: Option[DateTime],
   amount: Option[BigDecimal],
   runningBalanceAmount: Option[BigDecimal],
-  pending: Option[Boolean]
-  //categorization: RawCategorization
+  pending: Option[Boolean],
+  categorization: RawCategorization
 ) extends RawTransaction
 
 final case class RewardTransaction(raw: RawRewardTransaction) extends Transaction
@@ -355,7 +355,7 @@ final case class RawLoanTransaction(
   amount: Option[BigDecimal],
   runningBalanceAmount: Option[BigDecimal],
   pending: Option[Boolean],
-  //categorization: RawCategorization,
+  categorization: RawCategorization,
   principalAmount: Option[BigDecimal],
   interestAmount: Option[BigDecimal],
   escrowTotalAmount: Option[BigDecimal],
@@ -402,7 +402,7 @@ final case class RawInvestmentBankingTransaction(
   amount: Option[BigDecimal],
   runningBalanceAmount: Option[BigDecimal],
   pending: Option[Boolean],
-  //categorization: RawCategorization,
+  categorization: RawCategorization,
   bankingString: Option[String],
   subaccountFundType: Option[InvestmentSubAccountType],
   banking401KSourceType: Option[Banking401KSourceType]
@@ -438,7 +438,7 @@ final case class RawInvestmentTransaction(
   amount: Option[BigDecimal],
   runningBalanceAmount: Option[BigDecimal],
   pending: Option[Boolean],
-  //categorization: RawCategorization,
+  categorization: RawCategorization,
   reversalInstitutionTransactionId: Option[String],
   description: Option[String],
   buyType: Option[BuyType],
