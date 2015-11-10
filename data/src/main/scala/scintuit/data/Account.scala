@@ -264,6 +264,8 @@ final case class CreditAccount(raw: RawCreditAccount) extends Account {
   def accountType: Option[CreditAccountType] = raw.creditAccountType
   def descriptionDetails: Option[String] = raw.detailedDescription
 
+  override def balance: Option[BigMoney] = super.balance orElse creditBalance
+
   def creditBalance: Option[BigMoney] = toMoney(raw.currentBalance)
   def creditBalancePrevious: Option[BigMoney] = toMoney(raw.balancePreviousAmount)
   def creditAvailable: Option[BigMoney] = toMoney(raw.creditAvailableAmount)
@@ -333,6 +335,8 @@ final case class RawInvestmentAccount(
 
 final case class InvestmentAccount(raw: RawInvestmentAccount) extends Account {
   def accountType: Option[InvestmentAccountType] = raw.investmentAccountType
+
+  override def balance: Option[BigMoney] = super.balance orElse investmentBalance
 
   def cashBalance: Option[BigMoney] = toMoney(raw.cashBalanceAmount)
   def cashBalanceAvailable: Option[BigMoney] = toMoney(raw.availableCashBalance)
