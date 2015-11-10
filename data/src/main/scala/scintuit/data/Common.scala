@@ -76,4 +76,19 @@ object ErrorCode {
 
   def extractS(codes: String*)(error: ErrorInfo): Option[ErrorCode] =
     extract((codes map ErrorCode.apply): _*)(error)
+
+  object InvalidCredentials {
+    def unapply(error: ErrorInfo): Option[ErrorCode] =
+      ErrorCode.extractS("103")(error)
+  }
+
+  object IncorrectChallengeAnswer {
+    def unapply(error: ErrorInfo): Option[ErrorCode] =
+      ErrorCode.extractS("187")(error)
+  }
+
+  object InterventionRequired {
+    def unapply(error: ErrorInfo): Option[ErrorCode] =
+      ErrorCode.extractS("101", "108", "109", "179")(error)
+  }
 }

@@ -56,20 +56,6 @@ case class IncorrectChallengeAnswer(errorCode: ErrorCode) extends LoginError
 case class InterventionRequired(errorCode: ErrorCode) extends LoginError
 case class ChallengeIssued(challengeSession: ChallengeSession) extends LoginError
 
-object InvalidCredentials {
-  def unapply(error: ErrorInfo): Option[ErrorCode] =
-    ErrorCode.extractS("103")(error)
-}
-
-object IncorrectChallengeAnswer {
-  def unapply(error: ErrorInfo): Option[ErrorCode] =
-    ErrorCode.extractS("187")(error)
-}
-
-object InterventionRequired {
-  def unapply(error: ErrorInfo): Option[ErrorCode] =
-    ErrorCode.extractS("101", "108", "109", "179")(error)
-}
 object ChallengeIssued {
   def apply(session: ChallengeSessionId, node: ChallengeNodeId, challenges: Vector[Challenge]): ChallengeIssued =
     ChallengeIssued(ChallengeSession(session, node, challenges))
