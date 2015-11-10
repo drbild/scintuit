@@ -54,13 +54,6 @@ object ErrorType extends Enum[ErrorType] {
   case object Warning extends ErrorType
 }
 
-case class ErrorInfo(
-  errorType: Option[ErrorType],
-  errorCode: Option[ErrorCode],
-  errorMessage: Option[String],
-  correlationId: Option[String]
-)
-
 case class ErrorCode(code: String) {
   def isSuccess: Boolean = code == ErrorCode.Success
   def isError: Boolean = !isSuccess
@@ -69,26 +62,50 @@ case class ErrorCode(code: String) {
 object ErrorCode {
   val Success = "0"
 
-  def extract(codes: ErrorCode*)(error: ErrorInfo): Option[ErrorCode] = error.errorCode match {
-    case Some(ec) if codes.contains(ec) => Some(ec)
-    case _ => None
-  }
-
-  def extractS(codes: String*)(error: ErrorInfo): Option[ErrorCode] =
-    extract((codes map ErrorCode.apply): _*)(error)
+  def matches(codes: String*)(error: ErrorCode): Option[ErrorCode] =
+    if (codes contains error.code) Some(error) else (None)
 
   object InvalidCredentials {
-    def unapply(error: ErrorInfo): Option[ErrorCode] =
-      ErrorCode.extractS("103")(error)
+    def unapply(code: ErrorCode): Option[ErrorCode] = matches("103")(code)
   }
 
   object IncorrectChallengeAnswer {
-    def unapply(error: ErrorInfo): Option[ErrorCode] =
-      ErrorCode.extractS("187")(error)
+    def unapply(code: ErrorCode): Option[ErrorCode] = matches("187")(code)
   }
 
   object InterventionRequired {
-    def unapply(error: ErrorInfo): Option[ErrorCode] =
-      ErrorCode.extractS("101", "108", "109", "179")(error)
+    def unapply(code: ErrorCode): Option[ErrorCode] = matches("101", "108", "109", "179")(code)
   }
+}
+
+case class ErrorInfo(
+  errorType: Option[ErrorType],
+  errorCode: Option[ErrorCode],
+  errorMessage: Option[String],
+  correlationId: Option[String]
+)
+
+object ErrorInfo {
+
+  object InvalidCredentials {
+    def unapply(error: ErrorInfo): Option[ErrorCode] = error.errorCode match {
+      case Some(ErrorCode.InvalidCredentials(code)) => Some(code)
+      case _ => None
+    }
+  }
+
+  object IncorrectChallengeAnswer {
+    def unapply(error: ErrorInfo): Option[ErrorCode] = error.errorCode match {
+      case Some(ErrorCode.IncorrectChallengeAnswer(code)) => Some(code)
+      case _ => None
+    }
+  }
+
+  object InterventionRequired {
+    def unapply(error: ErrorInfo): Option[ErrorCode] = error.errorCode match {
+      case Some(ErrorCode.InterventionRequired(code)) => Some(code)
+      case _ => None
+    }
+  }
+
 }
