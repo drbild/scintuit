@@ -40,6 +40,11 @@ trait AccountFormats {
   implicit val loanTermTypeFormat: Format[LoanTermType] = EnumFormats.formats(LoanTermType, false)
 
   // =========================== Specific Account Formats ============================
+  implicit val otherAccountFormat: Format[OtherAccount] = {
+    val tagged = taggedFormat("otherAccount", Jsonx.formatCaseClass[RawOtherAccount])
+    xmap(tagged)(OtherAccount, _.raw)
+  }
+
   implicit val bankingAccountFormat: Format[BankingAccount] = {
     val tagged = taggedFormat("bankingAccount", Jsonx.formatCaseClass[RawBankingAccount])
     xmap(tagged)(BankingAccount, _.raw)
@@ -67,12 +72,14 @@ trait AccountFormats {
 
   // ==================================== Account =====================================
   implicit val accountFormat: Format[Account] = Format[Account](
+    otherAccountFormat.map(x => x: Account) orElse
     bankingAccountFormat.map(x => x: Account) orElse
-      creditAccountFormat.map(x => x: Account) orElse
-      investmentAccountFormat.map(x => x: Account) orElse
-      loanAccountFormat.map(x => x: Account) orElse
-      rewardAccountFormat.map(x => x: Account),
+    creditAccountFormat.map(x => x: Account) orElse
+    investmentAccountFormat.map(x => x: Account) orElse
+    loanAccountFormat.map(x => x: Account) orElse
+    rewardAccountFormat.map(x => x: Account),
       Writes[Account](_ match {
+      case other: OtherAccount => otherAccountFormat.writes(other)
       case banking: BankingAccount => bankingAccountFormat.writes(banking)
       case credit: CreditAccount => creditAccountFormat.writes(credit)
       case investment: InvestmentAccount => investmentAccountFormat.writes(investment)

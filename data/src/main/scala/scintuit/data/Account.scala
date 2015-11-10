@@ -164,6 +164,32 @@ sealed trait Account {
   def maskNumber(f: String => String): Account
 }
 
+final case class RawOtherAccount(
+  accountId: AccountId,
+  status: AccountStatus,
+  accountNumber: String,
+  accountNickname: Option[String],
+  displayPosition: Option[Int],
+  institutionId: InstitutionId,
+  description: Option[String],
+  balanceAmount: Option[BigDecimal],
+  balanceDate: Option[DateTime],
+  balancePreviousAmount: Option[BigDecimal],
+  lastTxnDate: Option[DateTime],
+  aggrSuccessDate: Option[DateTime],
+  aggrAttemptDate: Option[DateTime],
+  aggrStatusCode: Option[ErrorCode],
+  currencyCode: Option[CurrencyUnit],
+  institutionLoginId: LoginId
+) extends RawAccount
+
+final case class OtherAccount(raw: RawOtherAccount) extends Account {
+  override def accountType: Option[AccountType] = None
+
+  override def maskNumber(f: (String) => String): OtherAccount =
+    OtherAccount(raw.copy(accountNumber = f(raw.accountNumber)))
+}
+
 final case class RawBankingAccount(
   accountId: AccountId,
   status: AccountStatus,
