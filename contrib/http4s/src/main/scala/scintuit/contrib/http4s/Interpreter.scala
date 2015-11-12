@@ -160,7 +160,7 @@ object Interpreter extends PlayJsonInstances with ApiTransforms with ToIdOps {
 
           case ListTransactions(id, start, end) =>
             val uri = (BASE / s"accounts/${id}/transactions")
-              .+?("txtStartDate", start |> format)
+              .+?("txnStartDate", start |> format)
               .+??("txnEndDate", end map format)
             handlingAll(get(uri)).as[TransactionsResponse](decode(idT))
 
