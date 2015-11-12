@@ -30,7 +30,6 @@ trait PlayJsonInstances {
       reader.reads(json).fold(
         invalid = errors =>
           DecodeResult.failure {
-            println(Json.prettyPrint(json))
             errors.headOption.fold(ParseFailure("Unknown error", "Unknown error")) { case (path, error) =>
               ParseFailure(error.mkString(" "), path.toString)
             }
