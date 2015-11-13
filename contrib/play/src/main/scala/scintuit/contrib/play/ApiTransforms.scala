@@ -17,6 +17,8 @@
 package scintuit.contrib.play
 
 import play.api.libs.json._
+import scintuit.data._
+import scintuit.contrib.play.AccountFormats._
 
 object ApiTransforms extends ApiTransforms
 
@@ -32,7 +34,7 @@ trait ApiTransforms {
     case _ => JsError("error.expected.array")
   }
 
-  val idT: Reads[JsValue] = __.json.pick
+  val idT: Format[JsValue] = Format[JsValue](Reads(JsSuccess(_)), Writes(identity))
   val errorInfoT: Reads[JsValue] = (__ \ "errorInfo")(0).json.pick
 
   val listInstitutionsT: Reads[JsValue] = (__ \ "institution").json.pick
@@ -43,6 +45,21 @@ trait ApiTransforms {
   val addAccountsT: Writes[JsValue] = (__ \ "credentials" \ "credential").write
   val addAccountsChallengeT: Writes[JsValue] = (__ \ "challengeResponses" \ "response").write
   val challengeIssuedT: Reads[JsValue] = (__ \ "challenge").json.pick andThen jsMap((__ \ "textOrImageAndChoice").json.pick)
+
+  val updateAccountTypeT: Writes[AccountType] = Writes { typ =>
+    val label = typ match {
+      case _: BankingAccountType => "banking"
+      case _: CreditAccountType => "credit"
+      case _: LoanAccountType => "loan"
+      case _: InvestmentAccountType => "investment"
+      case _: RewardAccountType => "rewards"
+    }
+
+    Json.obj(
+       "type" -> s"${label}Account",
+       s"${label}AccountType" -> Json.toJson(typ)
+    )
+  }
 
   val listPositionsT: Reads[JsValue] = (__ \ "position").json.pick
 }

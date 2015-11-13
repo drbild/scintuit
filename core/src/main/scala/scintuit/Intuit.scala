@@ -58,6 +58,7 @@ object Intuit {
     case class DeleteAccount(id: AccountId) extends IntuitOp[Unit]
     case object ListCustomerAccounts extends IntuitOp[Vector[Account]]
     case class ListLoginAccounts(id: LoginId) extends IntuitOp[Vector[Account]]
+    case class UpdateAccountType(id: AccountId, accountType: AccountType) extends IntuitOp[Unit]
 
     // ---------------------------- Transactions ----------------------------
     case class ListTransactions(
@@ -114,6 +115,7 @@ object Intuit {
   val accounts: IntuitIO[Vector[Account]] = Free.liftFC(ListCustomerAccounts)
   def accounts(id: LoginId): IntuitIO[Vector[Account]] = Free.liftFC(ListLoginAccounts(id))
   def deleteAccount(id: AccountId): IntuitIO[Unit] = Free.liftFC(DeleteAccount(id))
+  def updateAccountType(id: AccountId, accountType: AccountType): IntuitIO[Unit] = Free.liftFC(UpdateAccountType(id, accountType))
 
   // ------------------------------ Transactions ------------------------------
   def transactions(id: AccountId, start: DateTime) = Free.liftFC(ListTransactions(id, start, None))

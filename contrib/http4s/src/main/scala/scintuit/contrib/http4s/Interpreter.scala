@@ -158,6 +158,10 @@ object Interpreter extends PlayJsonInstances with ApiTransforms with ToIdOps {
           case DeleteAccount(id) =>
             handlingAll(delete(s"accounts/${id}")) map (_ => ())
 
+          case UpdateAccountType(id, typ) =>
+            val req = put(BASE / s"accounts/${id}").withBody(typ)(encode(idT)(updateAccountTypeT))
+            handlingAll(req) map (_ => ())
+
           case ListTransactions(id, start, end) =>
             val uri = (BASE / s"accounts/${id}/transactions")
               .+?("txnStartDate", start |> format)
