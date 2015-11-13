@@ -224,7 +224,7 @@ sealed trait Transaction {
 
   def amount: Option[BigMoney] = toMoney(raw.amount)
   def amountAbsolute: Option[BigMoney] = toMoney(raw.amount map (_.abs))
-  def pending: Option[Boolean] = raw.pending
+  def pending: Option[Boolean] = raw.pending orElse datePosted.map(_ => false)
   def `type`: Option[String] = raw.`type`
 
   def memo: Option[String] = raw.memo
