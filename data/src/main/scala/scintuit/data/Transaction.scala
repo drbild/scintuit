@@ -223,6 +223,7 @@ sealed trait Transaction {
   def currencyConverted: Option[Boolean] = raw.currencyOriginal
 
   def amount: Option[BigMoney] = toMoney(raw.amount)
+  def amountAbsolute: Option[BigMoney] = toMoney(raw.amount map (_.abs))
   def pending: Option[Boolean] = raw.pending
   def `type`: Option[String] = raw.`type`
 
