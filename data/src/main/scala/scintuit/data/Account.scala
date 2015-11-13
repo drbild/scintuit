@@ -85,6 +85,17 @@ object LoanAccountType extends Enum[LoanAccountType] {
   case object Student extends LoanAccountType
 }
 
+sealed abstract class RewardAccountType extends AccountType with Uppercase
+object RewardAccountType extends Enum[RewardAccountType] {
+  val values = findValues
+  case object Affinity extends RewardAccountType
+  case object Airline extends RewardAccountType
+  case object Auto extends RewardAccountType
+  case object Hotel extends RewardAccountType
+  case object Shopping extends RewardAccountType
+  case object Other extends RewardAccountType
+}
+
 // ============================ Loan Property Types ============================
 sealed abstract class RateType extends EnumEntry with Uppercase
 object RateType extends Enum[RateType] {
@@ -557,7 +568,7 @@ case class RawRewardAccount(
   currencyCode: Option[CurrencyUnit],
   institutionLoginId: LoginId,
   postedDate: Option[DateTime],
-  programType: Option[String],
+  programType: Option[RewardAccountType],
   originalBalance: Option[BigDecimal],
   currentBalance: Option[BigDecimal],
   rewardQualifyAmountYtd: Option[BigDecimal],
@@ -566,9 +577,7 @@ case class RawRewardAccount(
 ) extends RawAccount
 
 final case class RewardAccount(raw: RawRewardAccount) extends Account {
-  // Should rewardType actually be accountType
-  def accountType: Option[AccountType] = None
-  def rewardType: Option[String] = raw.programType
+  def accountType: Option[RewardAccountType] = raw.programType
 
   def rewardBalance: Option[BigDecimal] = raw.currentBalance
   def rewardBalanceOriginal: Option[BigDecimal] = raw.originalBalance

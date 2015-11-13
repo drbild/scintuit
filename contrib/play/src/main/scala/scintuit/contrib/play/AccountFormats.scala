@@ -30,10 +30,28 @@ object AccountFormats extends AccountFormats
 trait AccountFormats {
 
   implicit val accountStatusFormat: Format[AccountStatus] = EnumFormats.formats(AccountStatus, false)
-  implicit val bankingAccountTypeFormat: Format[BankingAccountType] = EnumFormats.formats(BankingAccountType, false)
-  implicit val creditAccountTypeFormat: Format[CreditAccountType] = EnumFormats.formats(CreditAccountType, false)
-  implicit val loanAccountTypeFormat: Format[LoanAccountType] = EnumFormats.formats(LoanAccountType, false)
-  implicit val investmentAccountTypeFormat: Format[InvestmentAccountType] = EnumFormats.formats(InvestmentAccountType, false)
+  
+  private object AccountTypeFormats {
+    val bankingAccountTypeFormat: Format[BankingAccountType] = EnumFormats.formats(BankingAccountType, false)
+    val creditAccountTypeFormat: Format[CreditAccountType] = EnumFormats.formats(CreditAccountType, false)
+    val investmentAccountTypeFormat: Format[InvestmentAccountType] = EnumFormats.formats(InvestmentAccountType, false)
+    val loanAccountTypeFormat: Format[LoanAccountType] = EnumFormats.formats(LoanAccountType, false)
+    val rewardAccountTypeFormat: Format[RewardAccountType] = EnumFormats.formats(RewardAccountType, false)
+  }
+
+  implicit val bankingAccountTypeReads: Reads[BankingAccountType] = AccountTypeFormats.bankingAccountTypeFormat
+  implicit val creditAccountTypeReads: Reads[CreditAccountType] = AccountTypeFormats.creditAccountTypeFormat
+  implicit val investmentAccountTypeReads: Reads[InvestmentAccountType] = AccountTypeFormats.investmentAccountTypeFormat
+  implicit val loanAccountTypeReads: Reads[LoanAccountType] = AccountTypeFormats.loanAccountTypeFormat
+  implicit val rewardAccountTypeReads: Reads[RewardAccountType] = AccountTypeFormats.rewardAccountTypeFormat
+  
+  implicit val accountTypeWrites: Writes[AccountType] = Writes {
+    case t: BankingAccountType => AccountTypeFormats.bankingAccountTypeFormat.writes(t)
+    case t: CreditAccountType => AccountTypeFormats.creditAccountTypeFormat.writes(t)
+    case t: InvestmentAccountType => AccountTypeFormats.investmentAccountTypeFormat.writes(t)
+    case t: LoanAccountType => AccountTypeFormats.loanAccountTypeFormat.writes(t)
+    case t: RewardAccountType => AccountTypeFormats.rewardAccountTypeFormat.writes(t)
+  }
 
   implicit val rateTypeFormat: Format[RateType] = EnumFormats.formats(RateType, false)
   implicit val paymentTypeFormat: Format[PaymentType] = EnumFormats.formats(PaymentType, false)
