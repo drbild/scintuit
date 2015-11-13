@@ -77,7 +77,7 @@ object ErrorCode {
     def unapply(code: ErrorCode): Option[ErrorCode] = matches("101", "108", "109", "179")(code)
   }
 
-  object CredentialUpdateRequired {
+  object MissingCredentials {
     def unapply(code: ErrorCode): Option[ErrorCode] = matches("185")(code)
   }
 }
@@ -112,9 +112,9 @@ object ErrorInfo {
     }
   }
 
-  object CredentialUpdateRequired {
+  object MissingCredentials {
     def unapply(error: ErrorInfo): Option[ErrorCode] = error.errorCode match {
-      case Some(ErrorCode.CredentialUpdateRequired(code)) => Some(code)
+      case Some(ErrorCode.MissingCredentials(code)) => Some(code)
       case _ => None
     }
   }
