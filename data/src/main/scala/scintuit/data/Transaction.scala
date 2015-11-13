@@ -232,7 +232,7 @@ sealed trait Transaction {
   def payeeName: Option[String] = raw.payeeName
   def payeeNameExtended: Option[String] = raw.extendedPayeeName
 
-  def date: Option[DateTime] = raw.userDate
+  def date: Option[DateTime] = raw.userDate orElse datePosted
   def dateAggregated: Option[DateTime] = raw.availableDate
   def datePosted: Option[DateTime] = raw.postedDate
 
