@@ -90,7 +90,7 @@ trait TransactionFormats {
   implicit val transactionsResponseFormat: Format[TransactionsResponse] = {
     val reads: Reads[TransactionsResponse] =
       ((__ \ "bankingTransactions").readNullable[Vector[BankingTransaction]] and
-        (__ \ "creditCardTransations").readNullable[Vector[CreditTransaction]] and
+        (__ \ "creditCardTransactions").readNullable[Vector[CreditTransaction]] and
         (__ \ "investmentTransactions").readNullable[Vector[InvestmentTransaction]] and
         (__ \ "investmentBankingTransactions").readNullable[Vector[InvestmentBankingTransaction]] and
         (__ \ "loanTransactions").readNullable[Vector[LoanTransaction]] and
