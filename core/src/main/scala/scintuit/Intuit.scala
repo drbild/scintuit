@@ -55,7 +55,7 @@ object Intuit {
 
     // ------------------------------ Accounts ------------------------------
     case class GetAccount(id: AccountId) extends IntuitOp[Account]
-    case class DeleteAccount(id: AccountId) extends IntuitOp[Unit]
+    case class DeleteAccount(id: AccountId) extends IntuitOp[Int]
     case object ListCustomerAccounts extends IntuitOp[Vector[Account]]
     case class ListLoginAccounts(id: LoginId) extends IntuitOp[Vector[Account]]
     case class UpdateAccountType(id: AccountId, accountType: AccountType) extends IntuitOp[Unit]
@@ -70,7 +70,7 @@ object Intuit {
     case class ListPositions(id: AccountId) extends IntuitOp[Vector[Position]]
 
     // ----------------------------- Customers ------------------------------
-    case object DeleteCustomer extends IntuitOp[Unit]
+    case object DeleteCustomer extends IntuitOp[Int]
   }
 
   import IntuitOp._
@@ -114,7 +114,7 @@ object Intuit {
   def account(id: AccountId): IntuitIO[Account] = Free.liftFC(GetAccount(id))
   val accounts: IntuitIO[Vector[Account]] = Free.liftFC(ListCustomerAccounts)
   def accounts(id: LoginId): IntuitIO[Vector[Account]] = Free.liftFC(ListLoginAccounts(id))
-  def deleteAccount(id: AccountId): IntuitIO[Unit] = Free.liftFC(DeleteAccount(id))
+  def deleteAccount(id: AccountId): IntuitIO[Int] = Free.liftFC(DeleteAccount(id))
   def updateAccountType(id: AccountId, accountType: AccountType): IntuitIO[Unit] = Free.liftFC(UpdateAccountType(id, accountType))
 
   // ------------------------------ Transactions ------------------------------
@@ -125,5 +125,5 @@ object Intuit {
   def positions(id: AccountId): IntuitIO[Vector[Position]] = Free.liftFC(ListPositions(id))
 
   // ----------------------------- Customers ------------------------------
-  def deleteCustomer: IntuitIO[Unit] = Free.liftFC(DeleteCustomer)
+  def deleteCustomer: IntuitIO[Int] = Free.liftFC(DeleteCustomer)
 }

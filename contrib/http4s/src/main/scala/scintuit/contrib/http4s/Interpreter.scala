@@ -156,7 +156,14 @@ object Interpreter extends PlayJsonInstances with ApiTransforms with ToIdOps {
             }
 
           case DeleteAccount(id) =>
-            handlingAll(delete(s"accounts/${id}")) map (_ => ())
+            val req = delete(s"accounts/${id}")
+            handlingNone(req) flatMap {
+              case Successful(_) => Task.now(1)
+              case NotFound(_) => Task.now(0)
+              case res => res.as(jsonOf(implicitly[Reads[ErrorInfo]] compose errorInfoT)) flatMap { e =>
+                Task.fail(IntuitError(req.uri.renderString, res.status.code, e))
+              }
+            }
 
           case UpdateAccountType(id, typ) =>
             val req = put(BASE / s"accounts/${id}").withBody(typ)(encode(idT)(updateAccountTypeT))
@@ -199,7 +206,14 @@ object Interpreter extends PlayJsonInstances with ApiTransforms with ToIdOps {
             }
 
           case DeleteCustomer =>
-            handlingAll(delete(s"customers")) map (_ => ())
+            val req = delete(s"customers")
+            handlingNone(req) flatMap {
+              case Successful(_) => Task.now(1)
+              case NotFound(_) => Task.now(0)
+              case res => res.as(jsonOf(implicitly[Reads[ErrorInfo]] compose errorInfoT)) flatMap { e =>
+                Task.fail(IntuitError(req.uri.renderString, res.status.code, e))
+              }
+            }
         }
       }
     }
