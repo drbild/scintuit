@@ -71,10 +71,13 @@ trait ErrorCodeExtractors {
     def unapply(info: ErrorInfo): Option[ErrorCode] = info.errorCode flatMap unapply
   }
 
+  object AlreadyLoggedOn extends ErrorCodeExtractor { def codes = Vector("179") }
   object InvalidCredentials extends ErrorCodeExtractor { def codes = Vector("103") }
+  object InvalidPersonalAccessCode extends ErrorCodeExtractor { def codes = Vector("199") }
   object IncorrectChallengeAnswer extends ErrorCodeExtractor { def codes = Vector("187") }
   object InterventionRequired extends ErrorCodeExtractor { def codes = Vector("101", "108", "109", "179") }
   object MissingCredentials extends ErrorCodeExtractor { def codes = Vector("185") }
+  object TemporarilyUnavailable extends ErrorCodeExtractor { def codes = Vector("105, 155") }
 }
 
 object ErrorCode extends ErrorCodeExtractors {
