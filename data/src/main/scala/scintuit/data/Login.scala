@@ -50,13 +50,29 @@ case class ImageChallenge(
 // ====================== Errors ======================
 sealed trait LoginError extends Exception
 
-case class InvalidCredentials(errorCode: ErrorCode) extends LoginError
+case class AlreadyLoggedOn(errorCode: ErrorCode) extends LoginError
 case class IncorrectChallengeAnswer(errorCode: ErrorCode) extends LoginError
-
 case class InterventionRequired(errorCode: ErrorCode) extends LoginError
+case class InvalidCredentials(errorCode: ErrorCode) extends LoginError
+case class InvalidPersonalAccessCode(errorCode: ErrorCode) extends LoginError
+case class TemporarilyUnavailable(errorCode: ErrorCode) extends LoginError
+
 case class ChallengeIssued(challengeSession: ChallengeSession) extends LoginError
 
 object ChallengeIssued {
   def apply(session: ChallengeSessionId, node: ChallengeNodeId, challenges: Vector[Challenge]): ChallengeIssued =
     ChallengeIssued(ChallengeSession(session, node, challenges))
+}
+
+object LoginError {
+
+  def fromErrorInfo(errorInfo: ErrorInfo): Option[LoginError] = errorInfo match {
+    case ErrorInfo.AlreadyLoggedOn(code) => Some(AlreadyLoggedOn(code))
+    case ErrorInfo.IncorrectChallengeAnswer(code) => Some(IncorrectChallengeAnswer(code))
+    case ErrorInfo.InterventionRequired(code) => Some(InterventionRequired(code))
+    case ErrorInfo.InvalidCredentials(code) => Some(InvalidCredentials(code))
+    case ErrorInfo.InvalidPersonalAccessCode(code) => Some(InvalidPersonalAccessCode(code))
+    case ErrorInfo.TemporarilyUnavailable(code) => Some(TemporarilyUnavailable(code))
+  }
+
 }

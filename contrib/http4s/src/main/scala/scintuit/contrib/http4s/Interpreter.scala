@@ -134,10 +134,10 @@ object Interpreter extends PlayJsonInstances with ApiTransforms with ToIdOps {
             handlingNone(req) flatMap {
               case Successful(res) => res.as[Vector[Account]](decode(listAccountsT)) map (_.right)
               case Unauthorized(res) => decodeChallengeIssued(res) map (_.left)
-              case res => res.as[ErrorInfo](decode(errorInfoT)) flatMap {
-                case ErrorInfo.InvalidCredentials(code) => Task.now(InvalidCredentials(code).left)
-                case ErrorInfo.InterventionRequired(code) => Task.now(InterventionRequired(code).left)
-                case error => Task.fail(IntuitError(uri.renderString, res.status.code, error))
+              case res => res.as[ErrorInfo](decode(errorInfoT)) flatMap { error =>
+                LoginError.fromErrorInfo(error)
+                .map(le => Task.now(le.left))
+                .getOrElse(Task.fail(IntuitError(uri.renderString, res.status.code, error)))
               }
             }
 
@@ -148,10 +148,10 @@ object Interpreter extends PlayJsonInstances with ApiTransforms with ToIdOps {
             handlingNone(req) flatMap {
               case Successful(res) => res.as[Vector[Account]](decode(listAccountsT)) map (_.right)
               case Unauthorized(res) => decodeChallengeIssued(res) map (_.left)
-              case res => res.as[ErrorInfo](decode(errorInfoT)) flatMap {
-                case ErrorInfo.IncorrectChallengeAnswer(code) => Task.now(IncorrectChallengeAnswer(code).left)
-                case ErrorInfo.InterventionRequired(code) => Task.now(InterventionRequired(code).left)
-                case error => Task.fail(IntuitError(uri.renderString, res.status.code, error))
+              case res => res.as[ErrorInfo](decode(errorInfoT)) flatMap { error =>
+                LoginError.fromErrorInfo(error)
+                .map(le => Task.now(le.left))
+                .getOrElse(Task.fail(IntuitError(uri.renderString, res.status.code, error)))
               }
             }
 
@@ -184,10 +184,10 @@ object Interpreter extends PlayJsonInstances with ApiTransforms with ToIdOps {
             handlingNone(req) flatMap {
               case Successful(res) => Task.now(().right)
               case Unauthorized(res) => decodeChallengeIssued(res) map (_.left)
-              case res => res.as[ErrorInfo](decode(errorInfoT)) flatMap {
-                case ErrorInfo.InvalidCredentials(code) => Task.now(InvalidCredentials(code).left)
-                case ErrorInfo.InterventionRequired(code) => Task.now(InterventionRequired(code).left)
-                case error => Task.fail(IntuitError(uri.renderString, res.status.code, error))
+              case res => res.as[ErrorInfo](decode(errorInfoT)) flatMap { error =>
+                LoginError.fromErrorInfo(error)
+                .map(le => Task.now(le.left))
+                .getOrElse(Task.fail(IntuitError(uri.renderString, res.status.code, error)))
               }
             }
 
@@ -198,10 +198,10 @@ object Interpreter extends PlayJsonInstances with ApiTransforms with ToIdOps {
             handlingNone(req) flatMap {
               case Successful(res) => Task.now(().right)
               case Unauthorized(res) => decodeChallengeIssued(res) map (_.left)
-              case res => res.as[ErrorInfo](decode(errorInfoT)) flatMap {
-                case ErrorInfo.IncorrectChallengeAnswer(code) => Task.now(IncorrectChallengeAnswer(code).left)
-                case ErrorInfo.InterventionRequired(code) => Task.now(InterventionRequired(code).left)
-                case error => Task.fail(IntuitError(uri.renderString, res.status.code, error))
+              case res => res.as[ErrorInfo](decode(errorInfoT)) flatMap { error =>
+                LoginError.fromErrorInfo(error)
+                .map(le => Task.now(le.left))
+                .getOrElse(Task.fail(IntuitError(uri.renderString, res.status.code, error)))
               }
             }
 
