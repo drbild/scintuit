@@ -59,27 +59,26 @@ case class ErrorCode(code: String) {
   def isError: Boolean = !isSuccess
 }
 
-object ErrorCode {
-  val Success = "0"
+trait ErrorCodeExtractors {
 
-  def matches(codes: String*)(error: ErrorCode): Option[ErrorCode] =
+  private def matches(codes: String*)(error: ErrorCode): Option[ErrorCode] =
     if (codes contains error.code) Some(error) else (None)
 
-  object InvalidCredentials {
-    def unapply(code: ErrorCode): Option[ErrorCode] = matches("103")(code)
+  trait ErrorCodeExtractor {
+    def codes: Seq[String]
+
+    def unapply(code: ErrorCode): Option[ErrorCode] = matches(codes: _*)(code)
+    def unapply(info: ErrorInfo): Option[ErrorCode] = info.errorCode flatMap unapply
   }
 
-  object IncorrectChallengeAnswer {
-    def unapply(code: ErrorCode): Option[ErrorCode] = matches("187")(code)
-  }
+  object InvalidCredentials extends ErrorCodeExtractor { def codes = Vector("103") }
+  object IncorrectChallengeAnswer extends ErrorCodeExtractor { def codes = Vector("187") }
+  object InterventionRequired extends ErrorCodeExtractor { def codes = Vector("101", "108", "109", "179") }
+  object MissingCredentials extends ErrorCodeExtractor { def codes = Vector("185") }
+}
 
-  object InterventionRequired {
-    def unapply(code: ErrorCode): Option[ErrorCode] = matches("101", "108", "109", "179")(code)
-  }
-
-  object MissingCredentials {
-    def unapply(code: ErrorCode): Option[ErrorCode] = matches("185")(code)
-  }
+object ErrorCode extends ErrorCodeExtractors {
+  val Success = "0"
 }
 
 case class ErrorInfo(
@@ -89,33 +88,4 @@ case class ErrorInfo(
   correlationId: Option[String]
 )
 
-object ErrorInfo {
-
-  object InvalidCredentials {
-    def unapply(error: ErrorInfo): Option[ErrorCode] = error.errorCode match {
-      case Some(ErrorCode.InvalidCredentials(code)) => Some(code)
-      case _ => None
-    }
-  }
-
-  object IncorrectChallengeAnswer {
-    def unapply(error: ErrorInfo): Option[ErrorCode] = error.errorCode match {
-      case Some(ErrorCode.IncorrectChallengeAnswer(code)) => Some(code)
-      case _ => None
-    }
-  }
-
-  object InterventionRequired {
-    def unapply(error: ErrorInfo): Option[ErrorCode] = error.errorCode match {
-      case Some(ErrorCode.InterventionRequired(code)) => Some(code)
-      case _ => None
-    }
-  }
-
-  object MissingCredentials {
-    def unapply(error: ErrorInfo): Option[ErrorCode] = error.errorCode match {
-      case Some(ErrorCode.MissingCredentials(code)) => Some(code)
-      case _ => None
-    }
-  }
-}
+object ErrorInfo extends ErrorCodeExtractors
