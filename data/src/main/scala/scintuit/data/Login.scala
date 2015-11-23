@@ -53,8 +53,8 @@ sealed trait LoginError extends Exception
 case class AlreadyLoggedOn(errorCode: ErrorCode) extends LoginError
 case class IncorrectChallengeAnswer(errorCode: ErrorCode) extends LoginError
 case class InterventionRequired(errorCode: ErrorCode) extends LoginError
-case class InvalidCredentials(errorCode: ErrorCode) extends LoginError
-case class InvalidPersonalAccessCode(errorCode: ErrorCode) extends LoginError
+case class IncorrectCredentials(errorCode: ErrorCode) extends LoginError
+case class IncorrectPersonalAccessCode(errorCode: ErrorCode) extends LoginError
 case class TemporarilyUnavailable(errorCode: ErrorCode) extends LoginError
 
 case class ChallengeIssued(challengeSession: ChallengeSession) extends LoginError
@@ -70,8 +70,8 @@ object LoginError {
     case ErrorInfo.AlreadyLoggedOn(code) => Some(AlreadyLoggedOn(code))
     case ErrorInfo.IncorrectChallengeAnswer(code) => Some(IncorrectChallengeAnswer(code))
     case ErrorInfo.InterventionRequired(code) => Some(InterventionRequired(code))
-    case ErrorInfo.InvalidCredentials(code) => Some(InvalidCredentials(code))
-    case ErrorInfo.InvalidPersonalAccessCode(code) => Some(InvalidPersonalAccessCode(code))
+    case ErrorInfo.IncorrectCredentials(code) => Some(IncorrectCredentials(code))
+    case ErrorInfo.IncorrectPersonalAccessCode(code) => Some(IncorrectPersonalAccessCode(code))
     case ErrorInfo.TemporarilyUnavailable(code) => Some(TemporarilyUnavailable(code))
   }
 
