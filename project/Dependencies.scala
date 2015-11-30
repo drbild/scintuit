@@ -11,7 +11,7 @@ object Dependencies {
     val scala       = "2.11.7"
     val scalaz      = "7.1.3"
     val enumeratum  = "1.3.1"
-    val http4s      = "0.10.0"
+    val http4s      = "0.11.1"
     val jawn        = "0.8.3"
     val nscalaTime  = "2.0.0"
     val nscalaMoney = "0.10.0"
