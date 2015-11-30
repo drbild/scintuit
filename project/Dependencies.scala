@@ -10,7 +10,7 @@ object Dependencies {
   object V {
     val scala       = "2.11.7"
     val scalaz      = "7.1.5"
-    val enumeratum  = "1.3.1"
+    val enumeratum  = "1.3.2"
     val http4s      = "0.11.1"
     val jawn        = "0.8.3"
     val nscalaTime  = "2.0.0"
