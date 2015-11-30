@@ -15,7 +15,7 @@ object Dependencies {
     val jawn        = "0.8.3"
     val nscalaTime  = "2.6.0"
     val nscalaMoney = "0.10.0"
-    val play        = "2.4.2"
+    val play        = "2.4.4"
     val playJsonExt = "0.5.0"
   }
 
