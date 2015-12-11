@@ -20,9 +20,10 @@ package contrib.http4s
 import org.http4s.client.Client
 import org.http4s.headers.`Content-Type`
 import org.http4s.{DateTime => _, _}
-import scintuit.auth.{IntuitConfig, OAuthToken}
 import scintuit.util.cache.ExpiringLruCache
+import scintuit.util.config.IntuitConfig
 import scintuit.util.interpreter.{Context, Stage, Interpreter}
+import scintuit.util.oauth.OAuthToken
 import scintuit.util.request
 import scintuit.util.request.{IntuitRequest, RequestEncoder}
 import scintuit.util.response.{IntuitResponse, ResponseDecoder}

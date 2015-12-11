@@ -17,7 +17,7 @@
 package scintuit.contrib.http4s
 
 import org.http4s._
-import scintuit.auth.OAuthToken
+import scintuit.util.oauth.OAuthToken
 
 import scalaz.Scalaz._
 
