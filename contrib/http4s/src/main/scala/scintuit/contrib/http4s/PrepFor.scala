@@ -14,22 +14,29 @@
  * limitations under the License.
  */
 
-package scintuit.contrib.http4s.contrib.play
+package scintuit.contrib.http4s
 
-import jawn._
-import play.api.libs.json._
+import org.http4s._
+import org.http4s.client.Client
+import org.http4s.headers.Accept
 
-object Parser extends SupportParser[JsValue] {
+import scalaz.concurrent.Task
 
-  implicit val facade: SimpleFacade[JsValue] =
-    new SimpleFacade[JsValue] {
-      def jnull() = JsNull
-      def jfalse() = JsBoolean(false)
-      def jtrue() = JsBoolean(true)
-      def jnum(s: String) = JsNumber(BigDecimal(s))
-      def jint(s: String) = JsNumber(BigDecimal(s))
-      def jstring(s: String) = JsString(s)
-      def jarray(vs: List[JsValue]) = JsArray(vs)
-      def jobject(vs: Map[String, JsValue]) = JsObject(vs)
+object PrepFor {
+  val prepFor = PrepFor.apply _
+
+  def apply(decoder: EntityDecoder[_])(client: Client): Client = new Client {
+    override def shutdown(): Task[Unit] = client.shutdown()
+
+
+
+    override def prepare(req: Request): Task[Response] = {
+      val r = if (decoder.consumes.nonEmpty) {
+        val m = decoder.consumes.toList
+        req.putHeaders(Accept(m.head, m.tail: _*))
+      } else req
+      client.prepare(r)
     }
+  }
+
 }

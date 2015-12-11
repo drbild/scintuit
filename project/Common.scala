@@ -11,6 +11,7 @@ object Common {
   val commonSettings: Seq[Setting[_]] = Seq(
     scalaVersion := V.scala,
 
+    scalacOptions ++= Seq("-target:jvm-1.8"),
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature"),
     scalacOptions ++= Seq("-Xfatal-warnings", "-Ywarn-unused", "-Ywarn-unused-import"),
     scalacOptions ++= Seq("-language:implicitConversions", "-language:higherKinds"),
@@ -24,6 +25,8 @@ object Common {
       Libs.nscalaTime,
       Libs.nscalaMoney
     ),
+
+    addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.7.1"),
 
     // Release options
     organization    := "io.tellur",

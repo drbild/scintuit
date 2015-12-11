@@ -31,7 +31,7 @@ object SamlAssertion {
   def apply[C: Customer](key: PrivateKey, provider: SamlProvider, customer: C): SamlAssertion = {
     val now = DateTime.now(DateTimeZone.UTC)
     val ref = UUID.randomUUID.toString.replace("-", "")
-    SamlAssertion(build(Params(now, ref, key, provider, implicitly[Customer[C]].name(customer))))
+    SamlAssertion(build(Params(now, ref, key, provider, Customer[C].name(customer))))
   }
 
   type Assertion = String

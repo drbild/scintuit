@@ -24,6 +24,9 @@ trait Customer[T] {
 }
 
 object Customer {
+
+  def apply[C: Customer]: Customer[C] = implicitly[Customer[C]]
+
   implicit object StringCustomer extends Customer[String] {
     def name(customer: String): String = customer
   }

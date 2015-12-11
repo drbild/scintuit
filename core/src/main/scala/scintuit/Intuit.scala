@@ -21,6 +21,7 @@ import scintuit.data._
 
 import scalaz._
 
+
 object Intuit {
   /**
    * ADT for Intuit API operations
@@ -29,48 +30,87 @@ object Intuit {
 
   object IntuitOp {
     // ---------------------------- Institutions ----------------------------
-    case object ListInstitutions extends IntuitOp[Vector[InstitutionSummary]]
-    case class GetInstitution(id: InstitutionId) extends IntuitOp[Option[Institution]]
+    case object ListInstitutions extends IntuitOp[Vector[InstitutionSummary]] {
+      override def toString = s"listInstitutions"
+    }
+
+    case class GetInstitution(id: InstitutionId) extends IntuitOp[Option[Institution]] {
+      override def toString = s"getInstitution (institutionId=$id)"
+    }
 
     // ------------------------------- Logins -------------------------------
     case class AddAccounts(
       id: InstitutionId,
-      credentials: Seq[Credentials]) extends IntuitOp[LoginError \/ Vector[Account]]
+      credentials: Seq[Credentials]
+    ) extends IntuitOp[LoginError \/ Vector[Account]] {
+      override def toString = s"addAccounts (institutionId=$id)"
+    }
 
     case class AddAccountsChallenge(
       id: InstitutionId,
       sessionId: ChallengeSessionId,
       nodeId: ChallengeNodeId,
-      answers: Seq[ChallengeAnswer]) extends IntuitOp[LoginError \/ Vector[Account]]
+      answers: Seq[ChallengeAnswer]
+    ) extends IntuitOp[LoginError \/ Vector[Account]] {
+      override def toString = s"addAccountsChallenge (institutionId=$id)"
+    }
 
     case class UpdateLogin(
       id: LoginId,
-      credentials: Seq[Credentials]) extends IntuitOp[LoginError \/ Unit]
+      credentials: Seq[Credentials]
+    ) extends IntuitOp[LoginError \/ Unit] {
+      override def toString = s"updateLogin (loginId=$id)"
+    }
 
     case class UpdateLoginChallenge(
       id: LoginId,
       sessionId: ChallengeSessionId,
       nodeId: ChallengeNodeId,
-      answers: Seq[ChallengeAnswer]) extends IntuitOp[LoginError \/ Unit]
+      answers: Seq[ChallengeAnswer]
+    ) extends IntuitOp[LoginError \/ Unit] {
+      override def toString = s"updateLoginChallenge (loginId=$id)"
+    }
 
     // ------------------------------ Accounts ------------------------------
-    case class GetAccount(id: AccountId) extends IntuitOp[Account]
-    case class DeleteAccount(id: AccountId) extends IntuitOp[Int]
-    case object ListCustomerAccounts extends IntuitOp[Vector[Account]]
-    case class ListLoginAccounts(id: LoginId) extends IntuitOp[Vector[Account]]
-    case class UpdateAccountType(id: AccountId, accountType: AccountType) extends IntuitOp[Unit]
+    case class GetAccount(id: AccountId) extends IntuitOp[Account] {
+      override def toString = s"getAccount (accountId=$id)"
+    }
+
+    case class DeleteAccount(id: AccountId) extends IntuitOp[Int] {
+      override def toString = s"deleteAccount (accountId=$id)"
+
+    }
+
+    case object ListCustomerAccounts extends IntuitOp[Vector[Account]] {
+      override def toString = s"listCustomerAccounts"
+    }
+
+    case class ListLoginAccounts(id: LoginId) extends IntuitOp[Vector[Account]] {
+      override def toString = s"listLoginAccounts (loginId=$id)"
+    }
+
+    case class UpdateAccountType(id: AccountId, accountType: AccountType) extends IntuitOp[Unit] {
+      override def toString = s"updateAccountType (accountId=$id)"
+    }
 
     // ---------------------------- Transactions ----------------------------
     case class ListTransactions(
       id: AccountId,
       start: DateTime,
-      end: Option[DateTime]) extends IntuitOp[TransactionsResponse]
+      end: Option[DateTime]
+    ) extends IntuitOp[TransactionsResponse] {
+      override def toString = s"listTransactions (accountId=$id, start=$start, end=${end getOrElse "<none>"})"
+    }
 
     // ------------------------------ Positions -----------------------------
-    case class ListPositions(id: AccountId) extends IntuitOp[Vector[Position]]
+    case class ListPositions(id: AccountId) extends IntuitOp[Vector[Position]] {
+      override def toString = s"listPositions (accountId=$id)"
+    }
 
     // ----------------------------- Customers ------------------------------
-    case object DeleteCustomer extends IntuitOp[Int]
+    case object DeleteCustomer extends IntuitOp[Int] {
+      override def toString = s"deleteCustomer"
+    }
   }
 
   import IntuitOp._

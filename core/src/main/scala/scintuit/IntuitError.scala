@@ -16,7 +16,19 @@
 
 package scintuit
 
+import scintuit.Intuit.IntuitOp
 import scintuit.data._
 
-case class IntuitError(uri: String, statusCode: Int, errorInfo: ErrorInfo) extends
-Exception(s"Got ${statusCode} for ${uri}. ${errorInfo}")
+case class IntuitError(
+  request: String,
+  customer: String,
+  statusCode: Int,
+  errorInfo: ErrorInfo
+) extends Exception(
+  s"Intuit API Error (customer=$customer, request=$request, statusCode=$statusCode): ${errorInfo}"
+)
+
+object IntuitError {
+  def apply[C: Customer](op: IntuitOp[_], customer: C, statusCode: Int, errorInfo: ErrorInfo): IntuitError =
+   IntuitError(op.toString, implicitly[Customer[C]].name(customer), statusCode, errorInfo)
+}

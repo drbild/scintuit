@@ -13,7 +13,11 @@ lazy val scintuit = (
 lazy val core = (
   ScintuitProject("core")
     settings(
-      name                 :=  "scintuit-core"
+      name                 :=  "scintuit-core",
+      libraryDependencies ++= Seq(
+        Libs.caffeine,
+        Libs.jsr305
+      )
     )
     dependsOn(data)
 )
@@ -40,7 +44,7 @@ lazy val contribPlay = (
         Libs.playJsonExt
       )
     )
-    dependsOn(data)
+    dependsOn(core, data)
 )
 
 lazy val contribHttp4s = (
@@ -48,10 +52,7 @@ lazy val contribHttp4s = (
     settings(
       name                := "scintuit-contrib-http4s",
       libraryDependencies ++= Seq(
-        Libs.http4sClient,
-        Libs.http4sJawn,
-        Libs.jawnPlay,
-        Libs.playJson
+        Libs.http4sClient
       )
     )
     dependsOn(core, data, contribPlay)
