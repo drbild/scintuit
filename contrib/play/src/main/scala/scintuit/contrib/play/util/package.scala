@@ -1,7 +1,11 @@
 package scintuit.contrib.play
 
+import scintuit.contrib.play.util.decode.PlayDecoder
+import scintuit.contrib.play.util.encode.PlayEncoder
+
 package object util {
-  trait Implicits extends PlayRequestEncoder with PlayResponseDecoder
 
   implicit object Implicits extends Implicits
+
+  trait Implicits extends PlayEncoder with PlayDecoder
 }

@@ -19,24 +19,12 @@ package scintuit.contrib.http4s
 import org.http4s.client.Client
 import org.http4s.client.oauth1._
 import org.http4s._
-import org.http4s.Http4s._
-import scintuit.Customer
-import scintuit.util.config.IntuitConfig
 import scintuit.util.oauth.{OAuthConsumer, OAuthToken}
-import scintuit.util.saml.SamlAssertion
 
 import scalaz.concurrent.Task
 
-object OAuth extends IntuitDecoders {
+object oauth {
   val signing = Signing.apply _
-
-  def tokenForCustomer[C: Customer](client: Client, config: IntuitConfig, customer: C): Task[OAuthToken] = {
-    val samlUri = uri("https://oauth.intuit.com/oauth/v1/get_access_token_by_saml")
-    val request = Request(Method.POST, samlUri)
-    .putHeaders(Header("Authorization", s"""OAuth oauth_consumer_key="${config.oauthConsumer.key}""""))
-    .withBody(UrlForm("saml_assertion" -> SamlAssertion(config.signingKey, config.samlIssuer, Customer[C].name(customer)).signed))
-    client(request).as[OAuthToken]
-  }
 
   private implicit def convertConsumer(consumer: OAuthConsumer): Consumer = Consumer(consumer.key, consumer.secret)
   private implicit def convertToken(token: OAuthToken): Token = Token(token.token, token.secret)

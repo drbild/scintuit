@@ -5,9 +5,9 @@ import java.security.PrivateKey
 import scintuit.util.oauth.OAuthConsumer
 import scintuit.util.saml.SamlIssuer
 
-object config {
+object auth {
 
-  case class IntuitConfig(
+  case class AuthConfig(
     signingKey: PrivateKey,
     samlIssuer: SamlIssuer,
     oauthConsumer: OAuthConsumer
