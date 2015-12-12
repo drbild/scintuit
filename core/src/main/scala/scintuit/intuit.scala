@@ -126,8 +126,8 @@ object intuit {
   implicit val MonadIntuitIO: Monad[IntuitIO] = Free.freeMonad[({type λ[α] = Coyoneda[IntuitOp, α]})#λ]
 
   // ---------------------------- Institutions ----------------------------
-  val institutions: IntuitIO[Vector[InstitutionSummary]] = Free.liftFC(ListInstitutions)
-  def institution(id: Long): IntuitIO[Option[Institution]] = Free.liftFC(GetInstitution(id))
+  val getInstitutions: IntuitIO[Vector[InstitutionSummary]] = Free.liftFC(ListInstitutions)
+  def getInstitutionDetails(id: Long): IntuitIO[Option[Institution]] = Free.liftFC(GetInstitution(id))
 
   // ------------------------------- Logins -------------------------------
   def addAccounts(id: InstitutionId, credentials: Seq[Credentials]): IntuitIO[LoginError \/ Vector[Account]] =
@@ -151,18 +151,19 @@ object intuit {
     Free.liftFC(UpdateLoginChallenge(id, sessionId, nodeId, answers))
 
   // ------------------------------ Accounts ------------------------------
-  def account(id: AccountId): IntuitIO[Account] = Free.liftFC(GetAccount(id))
-  val accounts: IntuitIO[Vector[Account]] = Free.liftFC(ListCustomerAccounts)
-  def accounts(id: LoginId): IntuitIO[Vector[Account]] = Free.liftFC(ListLoginAccounts(id))
+  def getAccount(id: AccountId): IntuitIO[Account] = Free.liftFC(GetAccount(id))
+  val getCustomerAccounts: IntuitIO[Vector[Account]] = Free.liftFC(ListCustomerAccounts)
+  def getLoginAccounts(id: LoginId): IntuitIO[Vector[Account]] = Free.liftFC(ListLoginAccounts(id))
   def deleteAccount(id: AccountId): IntuitIO[Int] = Free.liftFC(DeleteAccount(id))
   def updateAccountType(id: AccountId, accountType: AccountType): IntuitIO[Unit] = Free.liftFC(UpdateAccountType(id, accountType))
 
   // ------------------------------ Transactions ------------------------------
-  def transactions(id: AccountId, start: DateTime) = Free.liftFC(ListTransactions(id, start, None))
-  def transactions(id: AccountId, start: DateTime, end: DateTime) = Free.liftFC(ListTransactions(id, start, Some(end)))
+  def getTransactions(id: AccountId, start: DateTime, end: Option[DateTime]) = Free.liftFC(ListTransactions(id, start, end))
+  def getTransactions(id: AccountId, start: DateTime, end: DateTime) = Free.liftFC(ListTransactions(id, start, Some(end)))
+  def getTransactions(id: AccountId, start: DateTime) = Free.liftFC(ListTransactions(id, start, None))
 
   // ------------------------------ Positions ------------------------------
-  def positions(id: AccountId): IntuitIO[Vector[Position]] = Free.liftFC(ListPositions(id))
+  def getPositions(id: AccountId): IntuitIO[Vector[Position]] = Free.liftFC(ListPositions(id))
 
   // ----------------------------- Customers ------------------------------
   def deleteCustomer: IntuitIO[Int] = Free.liftFC(DeleteCustomer)
