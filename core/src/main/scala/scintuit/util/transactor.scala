@@ -1,6 +1,6 @@
 package scintuit.util
 
-import scintuit.Customer
+import scintuit.customer.Customer
 import scintuit.Intuit.{IntuitIO, IntuitOp}
 import scintuit.util.auth.AuthConfig
 import scintuit.util.cache.Cache

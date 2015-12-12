@@ -4,7 +4,8 @@ import scintuit.Intuit.IntuitOp
 import scintuit.Intuit.IntuitOp._
 import scintuit.data._
 import scintuit.util.http.Response
-import scintuit.{Customer, IntuitError}
+import scintuit.customer.Customer
+import scintuit.IntuitError
 
 import scalaz.syntax.apply._
 import scalaz.syntax.either._

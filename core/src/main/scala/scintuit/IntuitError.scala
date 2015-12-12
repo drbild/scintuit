@@ -17,6 +17,7 @@
 package scintuit
 
 import scintuit.Intuit.IntuitOp
+import scintuit.customer.Customer
 import scintuit.data._
 
 case class IntuitError(

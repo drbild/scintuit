@@ -16,18 +16,19 @@
 
 package scintuit
 
-/**
- * Typeclass for objects that represent customers for the Intuit API.
- */
-trait Customer[T] {
-  def name(customer: T): String
-}
+/* Module for typeclass for representation of an Intuit customer */
+object customer {
 
-object Customer {
-
-  def apply[C: Customer]: Customer[C] = implicitly[Customer[C]]
-
-  implicit object StringCustomer extends Customer[String] {
-    def name(customer: String): String = customer
+  trait Customer[T] {
+    def name(customer: T): String
   }
+
+  object Customer {
+    def apply[C: Customer]: Customer[C] = implicitly[Customer[C]]
+
+    implicit object StringCustomer extends Customer[String] {
+      def name(customer: String): String = customer
+    }
+  }
+
 }
