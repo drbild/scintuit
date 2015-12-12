@@ -17,6 +17,11 @@
 package scintuit.data
 
 // ====================== Login ======================
+case class Login(
+  id: LoginId,
+  accounts: Vector[Account]
+)
+
 case class Credentials(
   name: String,
   value: String
