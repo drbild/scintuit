@@ -47,10 +47,10 @@ object executor {
   }
 
   private def convertMethod(method: http.Method): Method = method match {
-    case http.Delete => Method.DELETE
-    case http.Get => Method.GET
-    case http.Post => Method.POST
-    case http.Put => Method.PUT
+    case http.DELETE => Method.DELETE
+    case http.GET => Method.GET
+    case http.POST => Method.POST
+    case http.PUT => Method.PUT
   }
 
   private def convertHeaders(headers: Set[(String, String)]): Headers = Headers {

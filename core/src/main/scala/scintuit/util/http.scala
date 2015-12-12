@@ -6,10 +6,10 @@ object http {
 
   // ------------------------ HTTP Request ------------------------
   sealed trait Method
-  case object Delete extends Method
-  case object Get extends Method
-  case object Post extends Method
-  case object Put extends Method
+  case object DELETE extends Method
+  case object GET extends Method
+  case object POST extends Method
+  case object PUT extends Method
 
   case class Request(
     method: Method,

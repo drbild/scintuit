@@ -24,10 +24,10 @@ object prepare {
       .withHeader("Content-Type", "application/json")
       .withHeader("Accept", "application/json")
 
-  private def delete(r: String): Request = request(Delete, r)
-  private def get(r: String): Request = request(Get, r)
-  private def post(r: String): Request = request(Post, r)
-  private def put(r: String): Request = request(Put, r)
+  private def delete(r: String): Request = request(DELETE, r)
+  private def get(r: String): Request = request(GET, r)
+  private def post(r: String): Request = request(POST, r)
+  private def put(r: String): Request = request(PUT, r)
 
   def prepareRequest[T](encode: Encoder)(op: IntuitOp[T]): Request = op match {
     // @formatter:off
