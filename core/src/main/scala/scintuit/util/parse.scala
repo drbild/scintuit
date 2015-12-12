@@ -1,7 +1,7 @@
 package scintuit.util
 
-import scintuit.free.intuit.IntuitOp
-import scintuit.free.intuit.IntuitOp._
+import scintuit.raw.intuit.IntuitOp
+import scintuit.raw.intuit.IntuitOp._
 import scintuit.data._
 import scintuit.util.http.Response
 import scintuit.customer.Customer

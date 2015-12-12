@@ -1,7 +1,7 @@
-package scintuit.hi
+package scintuit.api
 
 import scintuit.data._
-import scintuit.free.{intuit => I}
+import scintuit.raw.{intuit => I}
 import org.joda.time.DateTime
 
 import scalaz.\/

@@ -16,7 +16,7 @@
 
 package scintuit
 
-import scintuit.free.intuit.IntuitOp
+import scintuit.raw.intuit.IntuitOp
 import scintuit.customer.Customer
 import scintuit.data._
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package scintuit.free
+package scintuit.raw
 
 import com.github.nscala_time.time.Imports._
 import scintuit.data.{TransactionsResponse, _}
