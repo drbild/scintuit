@@ -22,7 +22,7 @@ import scintuit.data._
 import scalaz._
 
 
-object Intuit {
+object intuit {
   /**
    * ADT for Intuit API operations
    */

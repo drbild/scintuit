@@ -16,7 +16,7 @@
 
 package scintuit
 
-import scintuit.Intuit.IntuitOp
+import scintuit.intuit.IntuitOp
 import scintuit.customer.Customer
 import scintuit.data._
 
