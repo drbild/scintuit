@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package scintuit
+package scintuit.free
 
 import com.github.nscala_time.time.Imports._
-import scintuit.data._
+import scintuit.data.{TransactionsResponse, _}
 
 import scalaz._
 
@@ -126,8 +126,11 @@ object intuit {
   implicit val MonadIntuitIO: Monad[IntuitIO] = Free.freeMonad[({type λ[α] = Coyoneda[IntuitOp, α]})#λ]
 
   // ---------------------------- Institutions ----------------------------
-  val getInstitutions: IntuitIO[Vector[InstitutionSummary]] = Free.liftFC(ListInstitutions)
-  def getInstitutionDetails(id: Long): IntuitIO[Option[Institution]] = Free.liftFC(GetInstitution(id))
+  val getInstitutions: IntuitIO[Vector[InstitutionSummary]] =
+    Free.liftFC(ListInstitutions)
+
+  def getInstitutionDetails(id: Long): IntuitIO[Option[Institution]] =
+    Free.liftFC(GetInstitution(id))
 
   // ------------------------------- Logins -------------------------------
   def addAccounts(id: InstitutionId, credentials: Seq[Credentials]): IntuitIO[LoginError \/ Vector[Account]] =
@@ -137,34 +140,46 @@ object intuit {
     id: InstitutionId,
     sessionId: ChallengeSessionId,
     nodeId: ChallengeNodeId,
-    answers: Seq[ChallengeAnswer]): IntuitIO[LoginError \/ Vector[Account]] =
+    answers: Seq[ChallengeAnswer]
+  ): IntuitIO[LoginError \/ Vector[Account]] =
     Free.liftFC(AddAccountsChallenge(id, sessionId, nodeId, answers))
 
   def updateLogin(id: LoginId, credentials: Seq[Credentials]): IntuitIO[LoginError \/ Unit] =
     Free.liftFC(UpdateLogin(id, credentials))
 
   def updateLogin(
-    id: InstitutionId,
+    id: LoginId,
     sessionId: ChallengeSessionId,
     nodeId: ChallengeNodeId,
-    answers: Seq[ChallengeAnswer]): IntuitIO[LoginError \/ Unit] =
+    answers: Seq[ChallengeAnswer]
+  ): IntuitIO[LoginError \/ Unit] =
     Free.liftFC(UpdateLoginChallenge(id, sessionId, nodeId, answers))
 
   // ------------------------------ Accounts ------------------------------
-  def getAccount(id: AccountId): IntuitIO[Account] = Free.liftFC(GetAccount(id))
-  val getCustomerAccounts: IntuitIO[Vector[Account]] = Free.liftFC(ListCustomerAccounts)
-  def getLoginAccounts(id: LoginId): IntuitIO[Vector[Account]] = Free.liftFC(ListLoginAccounts(id))
-  def deleteAccount(id: AccountId): IntuitIO[Int] = Free.liftFC(DeleteAccount(id))
-  def updateAccountType(id: AccountId, accountType: AccountType): IntuitIO[Unit] = Free.liftFC(UpdateAccountType(id, accountType))
+  def getAccount(id: AccountId): IntuitIO[Account] =
+    Free.liftFC(GetAccount(id))
+
+  val getCustomerAccounts: IntuitIO[Vector[Account]] =
+    Free.liftFC(ListCustomerAccounts)
+
+  def getLoginAccounts(id: LoginId): IntuitIO[Vector[Account]] =
+    Free.liftFC(ListLoginAccounts(id))
+
+  def deleteAccount(id: AccountId): IntuitIO[Int] =
+    Free.liftFC(DeleteAccount(id))
+
+  def updateAccountType(id: AccountId, accountType: AccountType): IntuitIO[Unit] =
+    Free.liftFC(UpdateAccountType(id, accountType))
 
   // ------------------------------ Transactions ------------------------------
-  def getTransactions(id: AccountId, start: DateTime, end: Option[DateTime]) = Free.liftFC(ListTransactions(id, start, end))
-  def getTransactions(id: AccountId, start: DateTime, end: DateTime) = Free.liftFC(ListTransactions(id, start, Some(end)))
-  def getTransactions(id: AccountId, start: DateTime) = Free.liftFC(ListTransactions(id, start, None))
+  def getTransactions(id: AccountId, start: DateTime, end: Option[DateTime]): IntuitIO[TransactionsResponse] =
+    Free.liftFC(ListTransactions(id, start, end))
 
   // ------------------------------ Positions ------------------------------
-  def getPositions(id: AccountId): IntuitIO[Vector[Position]] = Free.liftFC(ListPositions(id))
+  def getPositions(id: AccountId): IntuitIO[Vector[Position]] =
+    Free.liftFC(ListPositions(id))
 
   // ----------------------------- Customers ------------------------------
-  def deleteCustomer: IntuitIO[Int] = Free.liftFC(DeleteCustomer)
+  def deleteCustomer: IntuitIO[Int] =
+    Free.liftFC(DeleteCustomer)
 }

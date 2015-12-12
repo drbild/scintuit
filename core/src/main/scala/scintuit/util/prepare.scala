@@ -1,8 +1,8 @@
 package scintuit.util
 
 import com.github.nscala_time.time.Imports._
-import scintuit.intuit.IntuitOp
-import scintuit.intuit.IntuitOp._
+import scintuit.free.intuit.IntuitOp
+import scintuit.free.intuit.IntuitOp._
 import scintuit.data._
 
 object prepare {

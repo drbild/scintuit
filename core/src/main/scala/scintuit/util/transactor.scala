@@ -1,7 +1,7 @@
 package scintuit.util
 
 import scintuit.customer.Customer
-import scintuit.intuit.{IntuitIO, IntuitOp}
+import scintuit.free.intuit.{IntuitIO, IntuitOp}
 import scintuit.util.auth.AuthConfig
 import scintuit.util.cache.Cache
 import scintuit.util.oauth.OAuthToken
