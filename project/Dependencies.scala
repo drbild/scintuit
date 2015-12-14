@@ -33,7 +33,7 @@ object Dependencies {
     val nscalaMoneyPlayJson = "com.github.nscala-money"       %% "nscala-money-play-json" % V.nscalaMoney
     val playJson            = "com.typesafe.play"             %% "play-json"              % V.play
     val playJsonExt         = "org.cvogt"                     %% "play-json-extensions"   % V.playJsonExt
-
+    val playWs              = "com.typesafe.play"             %% "play-ws"                % V.play
     val jsr305              = "com.google.code.findbugs"      %  "jsr305"                 % V.jsr305 % "provided"
   }
 }

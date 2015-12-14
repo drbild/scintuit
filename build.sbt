@@ -6,8 +6,8 @@ lazy val scintuit = (
     settings(
       packagedArtifacts := Map.empty // don't publish the default aggregate root project
     )
-    aggregate(core, data, contribPlayJson, contribHttp4s)
-    dependsOn(core, data, contribPlayJson, contribHttp4s)
+    aggregate(core, data, contribPlayJson, contribPlayWs, contribHttp4s)
+    dependsOn(core, data, contribPlayJson, contribPlayWs, contribHttp4s)
 )
 
 lazy val core = (
@@ -45,6 +45,17 @@ lazy val contribPlayJson = (
       )
     )
     dependsOn(core, data)
+)
+
+lazy val contribPlayWs = (
+  ContribProject("play-ws")
+    settings(
+      name                := "scintuit-contrib-play-ws",
+      libraryDependencies ++=  Seq(
+        Libs.playWs
+      )
+    )
+    dependsOn(core, data, contribPlayJson)
 )
 
 lazy val contribHttp4s = (
