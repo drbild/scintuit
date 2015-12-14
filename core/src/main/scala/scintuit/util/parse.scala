@@ -35,9 +35,13 @@ object parse {
       val challenges = this.challenges(body)
       (sessionId |@| nodeId |@| challenges)(ChallengeSession(_, _, _))
     }
+
   }
 
   type PartialDecode[A] = PartialFunction[Response, Exception \/ A]
+
+  private def loginError(decode: Decoder)(body: String): Option[LoginError] =
+    decode.errorInfo(body).toOption flatMap (_.errorCode) flatMap LoginError.errorCode
 
   def decodeErrorInfo[C: Customer](decode: Decoder)(customer: C, op: IntuitOp[_]): PartialDecode[IntuitError] = {
     case Response(code, _, body) => decode.errorInfo(body) map (IntuitError(op, customer, code, _))
@@ -61,7 +65,8 @@ object parse {
 
     case AddAccounts(_, _) |
          AddAccountsChallenge(_, _, _, _) => { case Response(201, _, body) => decode.accounts(body) map (_.right)
-                                               case Response(401, h, body) => decode.challengeSession(h.toMap, body) map (ChallengeIssued(_).left) }
+                                               case Response(401, h, body) => decode.challengeSession(h.toMap, body) map (ChallengeIssued(_).left)
+                                               case Response(_,   _, body) if loginError(decode)(body).isDefined => loginError(decode)(body).get.left.right }
 
     case DeleteAccount(_)                 => { case Response(200, _, _)    => 1.right
                                                case Response(404, _, _)    => 0.right }
@@ -74,7 +79,8 @@ object parse {
 
     case UpdateLogin(_, _) |
          UpdateLoginChallenge(_, _, _, _) => { case Response(200, _, _)    => ().right.right
-                                               case Response(401, h, body) => decode.challengeSession(h.toMap, body) map (ChallengeIssued(_).left) }
+                                               case Response(401, h, body) => decode.challengeSession(h.toMap, body) map (ChallengeIssued(_).left)
+                                               case Response(_,   _, body) if loginError(decode)(body).isDefined => loginError(decode)(body).get.left.right }
 
     case DeleteCustomer                   => { case Response(200, _, _)    => 1.right
                                                case Response(404, _, _)    => 0.right }
