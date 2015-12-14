@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-package scintuit.contrib
+package scintuit.contrib.play.data.raw
 
-package object play {
+import com.github.nscala_money.money.json.PlayImports._
+import play.api.libs.json._
 
-  trait AllFormats extends AccountFormats with CommonFormats with InstitutionFormats with LoginFormats with
-  PositionFormats with SecurityInfoFormats with TransactionFormats
+import scintuit.data.raw.institution._
 
-  val account = AccountFormats
-  val common = CommonFormats
-  val institution = InstitutionFormats
-  val login = LoginFormats
-  val position = InstitutionFormats
-  val securityInfo = SecurityInfoFormats
-  val transactions = TransactionFormats
+object institution {
 
-  object all extends AllFormats
+  object InstitutionFormats extends InstitutionFormats
+
+  trait InstitutionFormats {
+    implicit val addressFormat: Format[Address] = Json.format[Address]
+    implicit val keyFormat: Format[Key] = Json.format[Key]
+    implicit val institutionFormat: Format[Institution] = Json.format[Institution]
+    implicit val institutionDetailsFormat: Format[InstitutionDetails] = Json.format[InstitutionDetails]
+  }
+
 }

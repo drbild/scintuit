@@ -1,8 +1,13 @@
 package scintuit.contrib.play.util
 
 import play.api.libs.json._
-import scintuit.contrib.play.all._
-import scintuit.data._
+import scintuit.contrib.play.data.raw.all._
+import scintuit.data.raw.account._
+import scintuit.data.raw.error._
+import scintuit.data.raw.institution._
+import scintuit.data.raw.login._
+import scintuit.data.raw.position._
+import scintuit.data.raw.transaction._
 import scintuit.util.parse.Decoder
 
 import scalaz.\/
@@ -30,11 +35,11 @@ object decode {
     override def challenges(body: String): Exception \/ Vector[Challenge] =
       decode[Vector[Challenge]](body)((__ \ "challenge").json.pick andThen jsMap((__ \ "textOrImageAndChoice").json.pick))
 
-    override def institution(body: String): Exception \/ Institution =
-      decode[Institution](body)((__ \ "keys").json.update((__ \ "key").json.pick).map(identity))
+    override def institution(body: String): Exception \/ InstitutionDetails =
+      decode[InstitutionDetails](body)((__ \ "keys").json.update((__ \ "key").json.pick).map(identity))
 
-    override def institutions(body: String): Exception \/ Vector[InstitutionSummary] =
-      decode[Vector[InstitutionSummary]](body)((__ \ "institution").json.pick)
+    override def institutions(body: String): Exception \/ Vector[Institution] =
+      decode[Vector[Institution]](body)((__ \ "institution").json.pick)
 
     override def account(body: String): Exception \/ Account =
       decode[Account](body)((__ \ "accounts")(0).json.pick)

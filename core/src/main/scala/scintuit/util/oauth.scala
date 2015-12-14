@@ -20,7 +20,7 @@ object oauth {
 
   def buildTokenRequest[C: Customer](customer: C, config: AuthConfig): Request = {
     val assertion = saml.signedAssertion(config.signingKey, config.samlIssuer, Customer[C].name(customer))
-    http.request(http.Post, "https://oauth.intuit.com/oauth/v1/get_access_token_by_saml")
+    http.request(http.POST, "https://oauth.intuit.com/oauth/v1/get_access_token_by_saml")
       .withHeader("Authorization", s"""OAuth oauth_consumer_key="${config.oauthConsumer.key}"""")
       .withHeader("Content-Type", "application/x-www-form-urlencoded")
       .withHeader("Accepts", "text/plain")
@@ -42,15 +42,15 @@ object oauth {
 
     response match {
       case Response(200, _, Token(token, secret)) => OAuthToken(token, secret).right
-      case Response(200, _, body) => OAuthException(s"Failed to parse response body: ${body}").left
-      case Response(code, _, body) => OAuthException(s"Failed with status code $code: ${body}").left
+      case Response(200, _, body) => OAuthException(s"Failed to parse response body: $body").left
+      case Response(code, _, body) => OAuthException(s"Failed with status code $code: $body").left
     }
   }
 
   def fetchToken[M[_]: Monad: Catchable, C: Customer](execute: Request => M[Response])(config: AuthConfig, customer: C): M[OAuthToken] =
     for {
       response <- execute(buildTokenRequest(customer, config))
-      result   <- decodeTokenResponse(response).fold(Catchable[M].fail, (Monad[M].point[OAuthToken](_)))
+      result   <- decodeTokenResponse(response).fold(Catchable[M].fail, Monad[M].point[OAuthToken](_))
     } yield result
 
 }

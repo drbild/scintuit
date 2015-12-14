@@ -1,8 +1,9 @@
 package scintuit.contrib.play.util
 
 import play.api.libs.json._
-import scintuit.contrib.play.all._
-import scintuit.data._
+import scintuit.contrib.play.data.raw.all._
+import scintuit.data.raw.account._
+import scintuit.data.raw.login._
 import scintuit.util.prepare.Encoder
 
 object encode {

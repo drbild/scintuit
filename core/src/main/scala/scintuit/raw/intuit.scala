@@ -17,12 +17,18 @@
 package scintuit.raw
 
 import com.github.nscala_time.time.Imports._
-import scintuit.data.{TransactionsResponse, _}
 
-import scalaz._
+import scintuit.data.raw.account._
+import scintuit.data.raw.institution._
+import scintuit.data.raw.login._
+import scintuit.data.raw.position._
+import scintuit.data.raw.transaction._
+
+import scalaz.{Coyoneda, Monad, Free, \/}
 
 
 object intuit {
+
   /**
    * ADT for Intuit API operations
    */
@@ -30,11 +36,11 @@ object intuit {
 
   object IntuitOp {
     // ---------------------------- Institutions ----------------------------
-    case object ListInstitutions extends IntuitOp[Vector[InstitutionSummary]] {
+    case object ListInstitutions extends IntuitOp[Vector[Institution]] {
       override def toString = s"listInstitutions"
     }
 
-    case class GetInstitution(id: InstitutionId) extends IntuitOp[Option[Institution]] {
+    case class GetInstitution(id: InstitutionId) extends IntuitOp[Option[InstitutionDetails]] {
       override def toString = s"getInstitution (institutionId=$id)"
     }
 
@@ -123,13 +129,13 @@ object intuit {
   /**
    * Monad instance for [[IntuitIO]] (can't be be inferred).
    */
-  implicit val MonadIntuitIO: Monad[IntuitIO] = Free.freeMonad[({type λ[α] = Coyoneda[IntuitOp, α]})#λ]
+  implicit val MonadIntuitIO: Monad[IntuitIO] = Free.freeMonad[Coyoneda[IntuitOp, ?]]
 
   // ---------------------------- Institutions ----------------------------
-  val getInstitutions: IntuitIO[Vector[InstitutionSummary]] =
+  val getInstitutions: IntuitIO[Vector[Institution]] =
     Free.liftFC(ListInstitutions)
 
-  def getInstitutionDetails(id: Long): IntuitIO[Option[Institution]] =
+  def getInstitutionDetails(id: Long): IntuitIO[Option[InstitutionDetails]] =
     Free.liftFC(GetInstitution(id))
 
   // ------------------------------- Logins -------------------------------
@@ -180,6 +186,6 @@ object intuit {
     Free.liftFC(ListPositions(id))
 
   // ----------------------------- Customers ------------------------------
-  def deleteCustomer: IntuitIO[Int] =
+  val deleteCustomer: IntuitIO[Int] =
     Free.liftFC(DeleteCustomer)
 }

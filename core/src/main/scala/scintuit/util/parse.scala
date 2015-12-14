@@ -1,8 +1,13 @@
 package scintuit.util
 
+import scintuit.data.raw.account._
+import scintuit.data.raw.error._
+import scintuit.data.raw.institution._
+import scintuit.data.raw.login._
+import scintuit.data.raw.position._
+import scintuit.data.raw.transaction._
 import scintuit.raw.intuit.IntuitOp
 import scintuit.raw.intuit.IntuitOp._
-import scintuit.data._
 import scintuit.util.http.Response
 import scintuit.customer.Customer
 import scintuit.IntuitError
@@ -19,8 +24,8 @@ object parse {
     def accounts(body: String): Exception \/ Vector[Account]
     def challenges(body: String): Exception \/ Vector[Challenge]
     def errorInfo(body: String): Exception \/ ErrorInfo
-    def institution(body: String): Exception \/ Institution
-    def institutions(body: String): Exception \/ Vector[InstitutionSummary]
+    def institution(body: String): Exception \/ InstitutionDetails
+    def institutions(body: String): Exception \/ Vector[Institution]
     def positions(body: String): Exception \/ Vector[Position]
     def transactions(body: String): Exception \/ TransactionsResponse
 

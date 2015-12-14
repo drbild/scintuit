@@ -3,7 +3,8 @@ package scintuit.util
 import com.github.nscala_time.time.Imports._
 import scintuit.raw.intuit.IntuitOp
 import scintuit.raw.intuit.IntuitOp._
-import scintuit.data._
+import scintuit.data.raw.account._
+import scintuit.data.raw.login._
 
 object prepare {
 

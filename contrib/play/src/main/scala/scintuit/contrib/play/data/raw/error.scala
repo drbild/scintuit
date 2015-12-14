@@ -14,19 +14,25 @@
  * limitations under the License.
  */
 
-package scintuit
+package scintuit.contrib.play.data.raw
 
-package object data {
-  type AccountId = Long
-  type InstitutionId = Long
-  type LoginId = Long
-  type PositionId = Long
-  type TransactionId = Long
+import enumeratum.EnumFormats
+import play.api.libs.json._
 
-  type ChallengeSessionId = String
-  type ChallengeNodeId = String
+import scintuit.data.raw.error._
 
-  type ChallengeAnswer = String
+object error {
 
-  type Base64Binary = String
+  object ErrorFormats extends ErrorFormats
+
+  trait ErrorFormats {
+
+    implicit val errorTypeFormat: Format[ErrorType] = EnumFormats.formats(ErrorType, false)
+
+    implicit val errorCodeFormat: Format[ErrorCode] =
+      Format(__.read[String].map(ErrorCode(_)), Writes(ec => JsString(ec.code)))
+
+    implicit val errorInfoFormat: Format[ErrorInfo] = Json.format[ErrorInfo]
+  }
+
 }

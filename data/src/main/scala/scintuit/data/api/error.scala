@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-package scintuit
+package scintuit.data.api
 
-import scintuit.raw.intuit.IntuitOp
-import scintuit.customer.Customer
-import scintuit.data.raw.error._
+import scintuit.data.raw
 
-case class IntuitError(
-  request: String,
-  customer: String,
-  statusCode: Int,
-  errorInfo: ErrorInfo
-) extends Exception(
-  s"Intuit API Error (customer=$customer, request=$request, statusCode=$statusCode): ${errorInfo}"
-)
+/**
+ * Moodule for error types
+ */
+object error {
 
-object IntuitError {
-  def apply[C: Customer](op: IntuitOp[_], customer: C, statusCode: Int, errorInfo: ErrorInfo): IntuitError =
-   IntuitError(op.toString, implicitly[Customer[C]].name(customer), statusCode, errorInfo)
+  type CorrelationId = raw.error.CorrelationId
+  
+  type ErrorType = raw.error.ErrorType
+  type ErrorCode = raw.error.ErrorCode
+  type ErrorInfo = raw.error.ErrorInfo
+
+  val ErrorType = raw.error.ErrorType
+  val ErrorCode = raw.error.ErrorCode
+  val ErrorInfo = raw.error.ErrorInfo
+
 }

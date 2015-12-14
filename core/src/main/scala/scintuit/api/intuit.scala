@@ -1,9 +1,16 @@
 package scintuit.api
 
-import scintuit.data._
-import scintuit.raw.{intuit => I}
 import org.joda.time.DateTime
 
+import scintuit.data.api.account._
+import scintuit.data.api.institution._
+import scintuit.data.api.login._
+import scintuit.data.api.position._
+import scintuit.data.api.transaction._
+import scintuit.data.raw
+import scintuit.raw.{intuit => I}
+
+import scala.language.postfixOps
 import scalaz.\/
 import scalaz.syntax.monad._
 import scalaz.syntax.traverse._
@@ -19,31 +26,43 @@ object intuit {
 
   // ---------------------------- Institutions ----------------------------
   val institutions: IntuitIO[Vector[InstitutionSummary]] =
-    I.getInstitutions
+    I.getInstitutions map (_ map InstitutionSummary)
 
   def institution(id: InstitutionId): IntuitIO[Option[Institution]] =
-    I.getInstitutionDetails(id)
+    I.getInstitutionDetails(id) map (_ map Institution)
 
   // ------------------------------- Logins -------------------------------
+  private def loginId(accounts: Vector[Account]): LoginId =
+    accounts match { case account +: _ => account.loginId }
+
+  private def institutionId(accounts: Vector[Account]): InstitutionId =
+    accounts match { case account +: _ => account.institutionId }
+
+  private def fromRaw(accounts: Vector[RawAccount]): Vector[Account] =
+    accounts map Account.apply
+
   def logins: IntuitIO[Vector[Login]] =
-   accounts map (_.groupBy(_.loginId).toVector.map(Login.tupled))
+    accounts map { as =>
+      (as groupBy (a => (a.loginId, a.institutionId)) toVector) map { case ((l, i), as) => Login(l, i, as) }
+    }
 
   def login(id: LoginId): IntuitIO[Login] =
-    I.getLoginAccounts(id) map (Login(id, _))
+    I.getLoginAccounts(id) map fromRaw map (as => Login(loginId(as), institutionId(as), as))
 
   def login(login: Login): IntuitIO[Login] =
     this.login(login.id)
 
-  private def loginId(accounts: Vector[Account]): LoginId = accounts match { case account +: _ => account.loginId }
+  def loginByInstitution(id: InstitutionId): IntuitIO[Login] =
+    accounts map (_ filter (_.institutionId == id)) map (as => Login(loginId(as), institutionId(as), as))
 
   def addLogin(id: InstitutionId, credentials: Seq[Credentials]): IntuitIO[LoginError \/ Login] =
-    I.addAccounts(id, credentials) >>= (_ traverseU (loginId _ andThen login _))
+    I.addAccounts(id, credentials) >>= (_ traverseU (fromRaw _ andThen loginId _ andThen login _))
 
   def addLogin(institution: Institution, credentials: Seq[Credentials]): IntuitIO[LoginError \/ Login] =
     addLogin(institution.id, credentials)
 
   def addLogin(id: InstitutionId, sessionId: ChallengeSessionId, nodeId: ChallengeNodeId, answers: Seq[ChallengeAnswer]): IntuitIO[LoginError \/ Login] =
-    I.addAccounts(id, sessionId, nodeId, answers) >>= (_ traverseU (loginId _ andThen login _))
+    I.addAccounts(id, sessionId, nodeId, answers) >>= (_ traverseU (fromRaw _ andThen loginId _ andThen login _))
 
   def addLogin(institution: Institution, sessionId: ChallengeSessionId, nodeId: ChallengeNodeId, answers: Seq[ChallengeAnswer]): IntuitIO[LoginError \/ Login] =
     addLogin(institution.id, sessionId, nodeId, answers)
@@ -62,10 +81,10 @@ object intuit {
 
   // ------------------------------ Accounts ------------------------------
   val accounts: IntuitIO[Vector[Account]] =
-    I.getCustomerAccounts
+    I.getCustomerAccounts map (_ map Account.apply)
 
   def account(id: AccountId): IntuitIO[Account] =
-    I.getAccount(id)
+    I.getAccount(id) map Account.apply
 
   def account(account: Account): IntuitIO[Account] =
     this.account(account.id)
@@ -84,7 +103,7 @@ object intuit {
 
   // ------------------------------ Transactions ------------------------------
   def transactions(id: AccountId, start: DateTime, end: Option[DateTime]): IntuitIO[Vector[Transaction]] =
-    I.getTransactions(id, start, end) map (_.transactions)
+    I.getTransactions(id, start, end) map (_.transactions map Transaction.fromRaw)
 
   def transactions(account: Account, start: DateTime, end: Option[DateTime]): IntuitIO[Vector[Transaction]] =
     transactions(account.id, start, end)
@@ -103,12 +122,12 @@ object intuit {
 
   // ------------------------------ Positions ------------------------------
   def positions(id: AccountId): IntuitIO[Vector[Position]] =
-    I.getPositions(id)
+    I.getPositions(id) map (_ map Position)
 
   def positions(account: Account): IntuitIO[Vector[Position]] =
     positions(account.id)
 
   // ----------------------------- Customers ------------------------------
-  def deleteCustomer: IntuitIO[Int] =
+  def deleteCustomer(): IntuitIO[Int] =
     I.deleteCustomer
 }
