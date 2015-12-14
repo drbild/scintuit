@@ -97,8 +97,8 @@ object transaction {
     def `type`: Option[String] = raw.`type`
 
     def categorization: Categorization = Categorization(raw.categorization)
-    def categoriesConsumer: Set[String] = categorization.categoriesConsumer
-    def categoriesScheduleC: Set[String] = categorization.cateogiresScheduleC
+    def categories: Set[ConsumerCategory] = categorization.categories
+    def scheduleCs: Set[String] = categorization.scheduleCs
 
     def memo: Option[String] = raw.memo
     def merchant: Option[String] = categorization.merchant
