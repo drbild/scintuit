@@ -10,7 +10,7 @@ import scintuit.raw.intuit.IntuitOp
 import scintuit.raw.intuit.IntuitOp._
 import scintuit.util.http.Response
 import scintuit.customer.Customer
-import scintuit.IntuitError
+import scintuit.exception._
 
 import scalaz.syntax.apply._
 import scalaz.syntax.either._

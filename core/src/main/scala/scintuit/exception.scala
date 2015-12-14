@@ -20,16 +20,23 @@ import scintuit.raw.intuit.IntuitOp
 import scintuit.customer.Customer
 import scintuit.data.raw.error._
 
-case class IntuitError(
-  request: String,
-  customer: String,
-  statusCode: Int,
-  errorInfo: ErrorInfo
-) extends Exception(
-  s"Intuit API Error (customer=$customer, request=$request, statusCode=$statusCode): ${errorInfo}"
-)
+/**
+ * Module for Scintuit exceptions
+ */
+object exception {
 
-object IntuitError {
-  def apply[C: Customer](op: IntuitOp[_], customer: C, statusCode: Int, errorInfo: ErrorInfo): IntuitError =
-   IntuitError(op.toString, implicitly[Customer[C]].name(customer), statusCode, errorInfo)
+  case class IntuitError(
+    request: String,
+    customer: String,
+    statusCode: Int,
+    errorInfo: ErrorInfo
+  ) extends Exception(
+    s"Intuit API Error (customer=$customer, request=$request, statusCode=$statusCode): ${errorInfo}"
+  )
+
+  object IntuitError {
+    def apply[C: Customer](op: IntuitOp[_], customer: C, statusCode: Int, errorInfo: ErrorInfo): IntuitError =
+      IntuitError(op.toString, implicitly[Customer[C]].name(customer), statusCode, errorInfo)
+  }
+
 }
