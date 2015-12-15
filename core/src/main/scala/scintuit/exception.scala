@@ -25,6 +25,16 @@ import scintuit.data.raw.error._
  */
 object exception {
 
+  case class NotFoundError(
+    customer: String,
+    request: String
+  ) extends Exception(s"Resource not found (customer=$customer, request=$request)")
+
+  object NotFoundError {
+    def apply[C: Customer](customer: C, op: IntuitOp[_]): Exception =
+      NotFoundError(implicitly[Customer[C]].name(customer), op.toString)
+  }
+
   case class IntuitError(
     request: String,
     customer: String,

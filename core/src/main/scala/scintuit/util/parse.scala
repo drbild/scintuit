@@ -48,7 +48,8 @@ object parse {
   }
 
   def decodeError[A, C: Customer](decode: Decoder)(customer: C, op: IntuitOp[A]): PartialDecode[A] = {
-    case res => decodeErrorInfo(decode)(customer, op).apply(res).merge.left
+    case Response(404, _, _) => NotFoundError(customer, op).left
+    case res                 => decodeErrorInfo(decode)(customer, op).apply(res).merge.left
   }
 
   def decodeSuccess[A](decode: Decoder)(op: IntuitOp[A]): PartialDecode[A] = op match {
