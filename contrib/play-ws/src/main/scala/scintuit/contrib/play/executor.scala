@@ -27,7 +27,7 @@ object executor {
     override def execute(request: http.Request): M[Response] =
        execute(request, client)
 
-    override def execute(request: Request, consumer: OAuthConsumer, token: OAuthToken): M[Response] =
+    override def sign(consumer: OAuthConsumer, token: OAuthToken)(request: Request): M[Response] =
        execute(request, oauth.sign(consumer, token) andThen client)
 
     private def convertRequest(request: Request): WSRequest = {

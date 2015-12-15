@@ -17,14 +17,15 @@ object transactor {
   class Transactor[M[_] : Monad : Catchable](
     config: AuthConfig,
     cache: Cache[M, String, OAuthToken],
-    execute: Executor[M]
-  )(implicit
+    executor: Executor[M]
+  )(
+    implicit
     encode: Encoder,
     decode: Decoder
   ) {
 
     def findToken[C: Customer](customer: C): M[OAuthToken] =
-      cache.get(Customer[C].name(customer), oauth.fetchToken(execute.execute)(config, _))
+      cache.get(Customer[C].name(customer), oauth.fetchToken(executor.execute)(config, _))
 
     def interpK[C: Customer]: IntuitOp ~> Kleisli[M, C, ?] = new (IntuitOp ~> Kleisli[M, C, ?]) {
       def apply[A](op: IntuitOp[A]): Kleisli[M, C, A] =
@@ -32,7 +33,7 @@ object transactor {
           customer <- Kleisli.ask[M, C]
           token    <- findToken(customer).liftM[Kleisli[?[_], C, ?]]
           request  <- prepare.prepareRequest(encode)(op).point[Kleisli[M, C, ?]]
-          response <- execute.execute(request, config.oauthConsumer, token).liftM[Kleisli[?[_], C, ?]]
+          response <- executor.sign(config.oauthConsumer, token)(request).liftM[Kleisli[?[_], C, ?]]
           result   <- parse.parseResponse[M, C, A](decode)(customer, op, response).liftM[Kleisli[?[_], C, ?]]
         } yield result
     }

@@ -39,7 +39,7 @@ object http {
 
     def execute(request: Request): M[Response]
 
-    def execute(request: Request, consumer: OAuthConsumer, token: OAuthToken): M[Response]
+    def sign(consumer: OAuthConsumer, token: OAuthToken)(request: Request): M[Response]
   }
 
 }

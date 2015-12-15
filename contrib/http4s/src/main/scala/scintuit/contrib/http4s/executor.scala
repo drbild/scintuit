@@ -23,7 +23,7 @@ object executor {
     override def execute(request: http.Request): Task[http.Response] =
       execute(request, client)
 
-    override def execute(request: http.Request, consumer: OAuthConsumer, token: OAuthToken): Task[http.Response] =
+    override def sign(consumer: OAuthConsumer, token: OAuthToken)(request: http.Request): Task[http.Response] =
       execute(request, oauth.signing(consumer, token)(client))
   }
 
