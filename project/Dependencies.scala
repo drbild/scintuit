@@ -14,6 +14,7 @@ object Dependencies {
     val enumeratum  = "1.3.2"
     val http4s      = "0.11.1"
     val jsr305      = "3.0.1"
+    val log4s       = "1.2.1"
     val nscalaTime  = "2.6.0"
     val nscalaMoney = "0.10.0"
     val play        = "2.4.4"
@@ -28,6 +29,7 @@ object Dependencies {
     val enumeratum          = "com.beachape"                  %% "enumeratum"             % V.enumeratum
     val enumeratumPlayJson  = "com.beachape"                  %% "enumeratum-play-json"   % V.enumeratum
     val http4sClient        = "org.http4s"                    %% "http4s-blaze-client"    % V.http4s
+    val log4s               = "org.log4s"                     %% "log4s"                  % V.log4s
     val nscalaTime          = "com.github.nscala-time"        %% "nscala-time"            % V.nscalaTime
     val nscalaMoney         = "com.github.nscala-money"       %% "nscala-money"           % V.nscalaMoney
     val nscalaMoneyPlayJson = "com.github.nscala-money"       %% "nscala-money-play-json" % V.nscalaMoney

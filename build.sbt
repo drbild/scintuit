@@ -16,7 +16,8 @@ lazy val core = (
       name                 :=  "scintuit-core",
       libraryDependencies ++= Seq(
         Libs.caffeine,
-        Libs.jsr305
+        Libs.jsr305,
+        Libs.log4s
       )
     )
     dependsOn(data)
