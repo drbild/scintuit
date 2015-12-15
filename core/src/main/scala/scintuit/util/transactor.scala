@@ -4,17 +4,19 @@ import scintuit.customer.Customer
 import scintuit.raw.intuit.{IntuitIO, IntuitOp}
 import scintuit.util.auth.AuthConfig
 import scintuit.util.cache.Cache
+import scintuit.util.capture.Capture
+
+import scintuit.util.http.{Response, Request, Executor}
 import scintuit.util.oauth.OAuthToken
 import scintuit.util.parse.Decoder
 import scintuit.util.prepare.Encoder
-import scintuit.util.http.Executor
 
 import scalaz._
 import scalaz.syntax.monad._
 
 object transactor {
 
-  class Transactor[M[_] : Monad : Catchable](
+  class Transactor[M[_] : Monad : Capture : Catchable](
     config: AuthConfig,
     cache: Cache[M, String, OAuthToken],
     executor: Executor[M]
@@ -24,8 +26,17 @@ object transactor {
     decode: Decoder
   ) {
 
+    import scintuit.util.time._
+
+    def logFor[C: Customer](customer: C, execute: Request => M[Response])(request: Request): M[Response] =
+      for {
+         start              <- now[M]
+         timedResponse      <- timed(execute)(request)
+         _                  <- log.logHttp[M, C](customer, start, request, timedResponse._2, timedResponse._1)
+      } yield timedResponse._2
+
     def findToken[C: Customer](customer: C): M[OAuthToken] =
-      cache.get(Customer[C].name(customer), oauth.fetchToken(executor.execute)(config, _))
+      cache.get(Customer[C].name(customer), oauth.fetchToken(logFor(customer, executor.execute))(config, _))
 
     def interpK[C: Customer]: IntuitOp ~> Kleisli[M, C, ?] = new (IntuitOp ~> Kleisli[M, C, ?]) {
       def apply[A](op: IntuitOp[A]): Kleisli[M, C, A] =
@@ -33,7 +44,7 @@ object transactor {
           customer <- Kleisli.ask[M, C]
           token    <- findToken(customer).liftM[Kleisli[?[_], C, ?]]
           request  <- prepare.prepareRequest(encode)(op).point[Kleisli[M, C, ?]]
-          response <- executor.sign(config.oauthConsumer, token)(request).liftM[Kleisli[?[_], C, ?]]
+          response <- logFor(customer, executor.sign(config.oauthConsumer, token))(request).liftM[Kleisli[?[_], C, ?]]
           result   <- parse.parseResponse[M, C, A](decode)(customer, op, response).liftM[Kleisli[?[_], C, ?]]
         } yield result
     }
