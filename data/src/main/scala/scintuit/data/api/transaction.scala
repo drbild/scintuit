@@ -79,27 +79,38 @@ object transaction {
   type RawInvestmentTransaction = raw.transaction.InvestmentTransaction
   type RawRewardTransaction = raw.transaction.RewardTransaction
 
-  sealed abstract class TransactionType extends EnumEntry with Uppercase
+  sealed abstract class TransactionType(private[transaction] val priority: Int) extends EnumEntry with Uppercase {
+
+    /**
+     * We can detect transaction types using multiple methods, e.g., the raw type field and the Intuit
+     * consumer category.  The type priority is used to settle disagreement among these methods.
+     */
+    private[transaction] def merge(typ: TransactionType): TransactionType =
+      if (typ.priority > this.priority) typ else this
+
+  }
+
+
   object TransactionType extends Enum[TransactionType] {
     val values = findValues
 
-    case object ATM extends TransactionType
-    case object Cash extends TransactionType
-    case object Check extends TransactionType
-    case object Credit extends TransactionType
-    case object Debit extends TransactionType
-    case object Deposit extends TransactionType { override def entryName: String = "DEP" }
-    case object DirectDebit extends TransactionType { override def entryName: String = "DIRECTDEBIT" }
-    case object DirectDeposit extends TransactionType { override def entryName: String = "DIRECTDEP" }
-    case object Dividend extends TransactionType { override def entryName: String = "DIV" }
-    case object Interest extends TransactionType { override def entryName: String = "INT" }
-    case object Fee extends TransactionType
-    case object Other extends TransactionType
-    case object Payment extends TransactionType
-    case object POS extends TransactionType
-    case object RepeatedPayment extends TransactionType { override def entryName: String = "REPEATPMT" }
-    case object ServiceCharge extends TransactionType { override def entryName: String = "SVGCHG" }
-    case object Transfer extends TransactionType { override def entryName: String = "XFER" }
+    case object ATM extends TransactionType(10)
+    case object Cash extends TransactionType(10)
+    case object Check extends TransactionType(10)
+    case object Credit extends TransactionType(1)
+    case object Debit extends TransactionType(1)
+    case object Deposit extends TransactionType(1) { override def entryName: String = "DEP" }
+    case object DirectDebit extends TransactionType(10) { override def entryName: String = "DIRECTDEBIT" }
+    case object DirectDeposit extends TransactionType(10) { override def entryName: String = "DIRECTDEP" }
+    case object Dividend extends TransactionType(10) { override def entryName: String = "DIV" }
+    case object Interest extends TransactionType(10) { override def entryName: String = "INT" }
+    case object Fee extends TransactionType(10)
+    case object Other extends TransactionType(1)
+    case object Payment extends TransactionType(1)
+    case object POS extends TransactionType(1)
+    case object RepeatedPayment extends TransactionType(1) { override def entryName: String = "REPEATPMT" }
+    case object ServiceCharge extends TransactionType(10) { override def entryName: String = "SVGCHG" }
+    case object Transfer extends TransactionType(1) { override def entryName: String = "XFER" }
 
     def withAlternateNameInsensitiveOption(alt: String): Option[TransactionType] =
       alt match {
@@ -129,13 +140,23 @@ object transaction {
     def pending: Option[Boolean] = raw.pending orElse datePosted.map(_ => false)
 
     def `type`: Option[TransactionType] =
-      (raw.`type` flatMap TransactionType.withNameInsensitiveOption) orElse
-      (raw.`type` flatMap TransactionType.withAlternateNameInsensitiveOption) orElse
-      (if (numberCheck.isDefined) Some(TransactionType.Check) else None)
+      // @formatter:off
+      Vector(
+        raw.`type` flatMap TransactionType.withNameInsensitiveOption,
+        raw.`type` flatMap TransactionType.withAlternateNameInsensitiveOption,
+        if (numberCheck.isDefined) Some(TransactionType.Check) else None,
+        if (isInCategory(ConsumerCategory.Check)) Some(TransactionType.Check) else None,
+        if (isInCategory(ConsumerCategory.InterestIncome)) Some(TransactionType.Interest) else None,
+        if (isInCategory(ConsumerCategory.FeesAndCharges)) Some(TransactionType.Fee) else None
+      ).flatten reduceOption (_ merge _)
+      // @formatter:on
 
     def categorization: Categorization = Categorization(raw.categorization)
     def categories: Set[ConsumerCategory] = categorization.categories
     def scheduleCs: Set[String] = categorization.scheduleCs
+
+    def isInCategory(category: ConsumerCategory): Boolean =
+      categories exists (_ isA category)
 
     def memo: Option[String] = raw.memo
     def merchant: Option[String] = categorization.merchant
