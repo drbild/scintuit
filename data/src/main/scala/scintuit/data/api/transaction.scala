@@ -136,7 +136,7 @@ object transaction {
     def currencyConverted: Option[Boolean] = raw.currencyOriginal
 
     def amount: Option[BigMoney] = toMoney(raw.amount)
-    def amountAbsolute: Option[BigMoney] = toMoney(raw.amount map (_.abs))
+    def amountAbsolute: Option[BigMoney] = amount map (_.abs)
     def pending: Option[Boolean] = raw.pending orElse datePosted.map(_ => false)
 
     def `type`: Option[TransactionType] =
