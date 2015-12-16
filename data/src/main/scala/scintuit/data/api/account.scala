@@ -87,6 +87,7 @@ object account {
     def currency: Option[CurrencyUnit] = raw.currencyCode
 
     def balance: Option[BigMoney] = toMoney(raw.balanceAmount)
+    def balanceAbsolute: Option[BigMoney] = toMoney(raw.balanceAmount map (_.abs))
     def balanceDate: Option[DateTime] = raw.balanceDate
     def balancePrevious: Option[BigMoney] = toMoney(raw.balancePreviousAmount)
 
