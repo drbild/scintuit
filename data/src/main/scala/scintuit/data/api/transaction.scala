@@ -18,6 +18,8 @@ package scintuit.data.api
 
 import com.github.nscala_money.money.Imports._
 import com.github.nscala_time.time.Imports._
+import enumeratum.EnumEntry._
+import enumeratum.{Enum, EnumEntry}
 
 import scintuit.data.api.categorization._
 import scintuit.data.api.security._
@@ -77,6 +79,37 @@ object transaction {
   type RawInvestmentTransaction = raw.transaction.InvestmentTransaction
   type RawRewardTransaction = raw.transaction.RewardTransaction
 
+  sealed abstract class TransactionType extends EnumEntry with Uppercase
+  object TransactionType extends Enum[TransactionType] {
+    val values = findValues
+
+    case object ATM extends TransactionType
+    case object Cash extends TransactionType
+    case object Check extends TransactionType
+    case object Credit extends TransactionType
+    case object Debit extends TransactionType
+    case object Deposit extends TransactionType { override def entryName: String = "DEP" }
+    case object DirectDebit extends TransactionType { override def entryName: String = "DIRECTDEBIT" }
+    case object DirectDeposit extends TransactionType { override def entryName: String = "DIRECTDEP" }
+    case object Dividend extends TransactionType { override def entryName: String = "DIV" }
+    case object Interest extends TransactionType { override def entryName: String = "INT" }
+    case object Fee extends TransactionType
+    case object Other extends TransactionType
+    case object Payment extends TransactionType
+    case object POS extends TransactionType
+    case object RepeatedPayment extends TransactionType { override def entryName: String = "REPEATPMT" }
+    case object ServiceCharge extends TransactionType { override def entryName: String = "SVGCHG" }
+    case object Transfer extends TransactionType { override def entryName: String = "XFER" }
+
+    def withAlternateNameInsensitiveOption(alt: String): Option[TransactionType] =
+      alt match {
+        case "dividend" => Some(TransactionType.Dividend)
+        case "interest" => Some(TransactionType.Interest)
+        case _ => None
+      }
+
+  }
+
   sealed trait Transaction {
     val raw: RawTransaction
 
@@ -94,7 +127,11 @@ object transaction {
     def amount: Option[BigMoney] = toMoney(raw.amount)
     def amountAbsolute: Option[BigMoney] = toMoney(raw.amount map (_.abs))
     def pending: Option[Boolean] = raw.pending orElse datePosted.map(_ => false)
-    def `type`: Option[String] = raw.`type`
+
+    def `type`: Option[TransactionType] =
+      (raw.`type` flatMap TransactionType.withNameInsensitiveOption) orElse
+      (raw.`type` flatMap TransactionType.withAlternateNameInsensitiveOption) orElse
+      (if (numberCheck.isDefined) Some(TransactionType.Check) else None)
 
     def categorization: Categorization = Categorization(raw.categorization)
     def categories: Set[ConsumerCategory] = categorization.categories
