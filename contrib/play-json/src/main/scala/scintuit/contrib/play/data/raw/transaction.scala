@@ -332,7 +332,7 @@ object transaction {
         (__ \ "investmentBankingTransactions").readNullable[Vector[InvestmentBankingTransaction]] and
         (__ \ "loanTransactions").readNullable[Vector[LoanTransaction]] and
         (__ \ "rewardsTransactions").readNullable[Vector[RewardTransaction]] and
-        (__ \ "notRefreshedReason").read[NotRefreshedReason])(
+        (__ \ "notRefreshedReason").readNullable[NotRefreshedReason])(
           (b, c, i, ib, l, r, nrr) => TransactionsResponse(Vector(b, c, i, ib, l, r).flatten.flatten, nrr)
         )
       val writes: Writes[TransactionsResponse] =
@@ -342,7 +342,7 @@ object transaction {
         (__ \ "investmentBankingTransactions").write[Vector[InvestmentBankingTransaction]] and
         (__ \ "loanTransactions").write[Vector[LoanTransaction]] and
         (__ \ "rewardsTransactions").write[Vector[RewardTransaction]] and
-        (__ \ "notRefreshedReason").write[NotRefreshedReason])( tr => {
+        (__ \ "notRefreshedReason").writeNullable[NotRefreshedReason])( tr => {
         val b = tr.transactions collect {case x: BankingTransaction => x}
         val c = tr.transactions collect {case x: CreditTransaction => x}
         val i = tr.transactions collect {case x: InvestmentTransaction => x}

@@ -15,7 +15,7 @@ object transaction {
 
   type TransactionId = Long
 
-  case class TransactionsResponse(transactions: Vector[Transaction], notRefreshedReason: NotRefreshedReason)
+  case class TransactionsResponse(transactions: Vector[Transaction], notRefreshedReason: Option[NotRefreshedReason])
 
   sealed trait NotRefreshedReason extends EnumEntry with Snakecase with Uppercase
   object NotRefreshedReason extends Enum[NotRefreshedReason] {
