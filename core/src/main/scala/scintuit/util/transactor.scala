@@ -53,7 +53,7 @@ object transactor {
         Free.runFC[CustomerOp, Kleisli[M, C, ?], A](ma)(interpK)
     }
 
-    def transFor[C: Customer](customer: C): CustomerIO ~> M = new (CustomerIO ~> M) {
+    def trans[C: Customer](customer: C): CustomerIO ~> M = new (CustomerIO ~> M) {
       override def apply[A](ma: CustomerIO[A]): M[A] =
         transK.apply(ma)(customer)
     }
