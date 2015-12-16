@@ -16,8 +16,7 @@
 
 package scintuit
 
-import scintuit.raw.intuit.IntuitOp
-import scintuit.customer.Customer
+import scintuit.raw.customer.{Customer, CustomerOp}
 import scintuit.data.raw.error._
 
 /**
@@ -31,7 +30,7 @@ object exception {
   ) extends Exception(s"Resource not found (customer=$customer, request=$request)")
 
   object NotFoundError {
-    def apply[C: Customer](customer: C, op: IntuitOp[_]): Exception =
+    def apply[C: Customer](customer: C, op: CustomerOp[_]): Exception =
       NotFoundError(implicitly[Customer[C]].name(customer), op.toString)
   }
 
@@ -45,7 +44,7 @@ object exception {
   )
 
   object IntuitError {
-    def apply[C: Customer](op: IntuitOp[_], customer: C, statusCode: Int, errorInfo: ErrorInfo): IntuitError =
+    def apply[C: Customer](op: CustomerOp[_], customer: C, statusCode: Int, errorInfo: ErrorInfo): IntuitError =
       IntuitError(op.toString, implicitly[Customer[C]].name(customer), statusCode, errorInfo)
   }
 

@@ -1,6 +1,6 @@
 package scintuit.util
 
-import scintuit.customer.Customer
+import scintuit.raw.customer.Customer
 import scintuit.util.auth.AuthConfig
 import scintuit.util.http.{Response, Request}
 

@@ -1,8 +1,8 @@
 package scintuit.util
 
 import com.github.nscala_time.time.Imports._
-import scintuit.raw.intuit.IntuitOp
-import scintuit.raw.intuit.IntuitOp._
+import scintuit.raw.customer.CustomerOp
+import scintuit.raw.customer.CustomerOp._
 import scintuit.data.raw.account._
 import scintuit.data.raw.login._
 
@@ -30,7 +30,7 @@ object prepare {
   private def post(r: String): Request = request(POST, r)
   private def put(r: String): Request = request(PUT, r)
 
-  def prepareRequest[T](encode: Encoder)(op: IntuitOp[T]): Request = op match {
+  def prepareRequest[T](encode: Encoder)(op: CustomerOp[T]): Request = op match {
     // @formatter:off
     case ListInstitutions                                 => get(s"institutions")
     case GetInstitution(id)                               => get(s"institutions/$id")

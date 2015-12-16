@@ -6,10 +6,9 @@ import scintuit.data.raw.institution._
 import scintuit.data.raw.login._
 import scintuit.data.raw.position._
 import scintuit.data.raw.transaction._
-import scintuit.raw.intuit.IntuitOp
-import scintuit.raw.intuit.IntuitOp._
+import scintuit.raw.customer.{Customer, CustomerOp}
+import scintuit.raw.customer.CustomerOp._
 import scintuit.util.http.Response
-import scintuit.customer.Customer
 import scintuit.exception._
 
 import scalaz.syntax.apply._
@@ -43,16 +42,16 @@ object parse {
   private def loginError(decode: Decoder)(body: String): Option[LoginError] =
     decode.errorInfo(body).toOption flatMap (_.errorCode) flatMap LoginError.errorCode
 
-  def decodeErrorInfo[C: Customer](decode: Decoder)(customer: C, op: IntuitOp[_]): PartialDecode[IntuitError] = {
+  def decodeErrorInfo[C: Customer](decode: Decoder)(customer: C, op: CustomerOp[_]): PartialDecode[IntuitError] = {
     case Response(code, _, body) => decode.errorInfo(body) map (IntuitError(op, customer, code, _))
   }
 
-  def decodeError[A, C: Customer](decode: Decoder)(customer: C, op: IntuitOp[A]): PartialDecode[A] = {
+  def decodeError[A, C: Customer](decode: Decoder)(customer: C, op: CustomerOp[A]): PartialDecode[A] = {
     case Response(404, _, _) => NotFoundError(customer, op).left
     case res                 => decodeErrorInfo(decode)(customer, op).apply(res).merge.left
   }
 
-  def decodeSuccess[A](decode: Decoder)(op: IntuitOp[A]): PartialDecode[A] = op match {
+  def decodeSuccess[A](decode: Decoder)(op: CustomerOp[A]): PartialDecode[A] = op match {
     // @formatter:off
     case ListInstitutions                 => { case Response(200, _, body) => decode.institutions(body) }
 
@@ -88,7 +87,7 @@ object parse {
     // @formatter:on
   }
 
-  def parseResponse[M[_] : Monad : Catchable, C: Customer, A](decode: Decoder)(customer: C, op: IntuitOp[A], response: Response): M[A] =
+  def parseResponse[M[_] : Monad : Catchable, C: Customer, A](decode: Decoder)(customer: C, op: CustomerOp[A], response: Response): M[A] =
     (decodeSuccess(decode)(op) orElse decodeError(decode)(customer, op)).apply(response) match {
       case -\/(e) => Catchable[M].fail(e)
       case \/-(a) => Monad[M].point(a)

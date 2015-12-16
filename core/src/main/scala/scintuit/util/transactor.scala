@@ -1,7 +1,6 @@
 package scintuit.util
 
-import scintuit.customer.Customer
-import scintuit.raw.intuit.{IntuitIO, IntuitOp}
+import scintuit.raw.customer.{Customer, CustomerIO, CustomerOp}
 import scintuit.util.auth.AuthConfig
 import scintuit.util.cache.Cache
 import scintuit.util.capture.Capture
@@ -38,8 +37,8 @@ object transactor {
     def findToken[C: Customer](customer: C): M[OAuthToken] =
       cache.get(Customer[C].name(customer), oauth.fetchToken(logFor(customer, executor.execute))(config, _))
 
-    def interpK[C: Customer]: IntuitOp ~> Kleisli[M, C, ?] = new (IntuitOp ~> Kleisli[M, C, ?]) {
-      def apply[A](op: IntuitOp[A]): Kleisli[M, C, A] =
+    def interpK[C: Customer]: CustomerOp ~> Kleisli[M, C, ?] = new (CustomerOp ~> Kleisli[M, C, ?]) {
+      def apply[A](op: CustomerOp[A]): Kleisli[M, C, A] =
         for {
           customer <- Kleisli.ask[M, C]
           token    <- findToken(customer).liftM[Kleisli[?[_], C, ?]]
@@ -49,13 +48,13 @@ object transactor {
         } yield result
     }
 
-    def transK[C: Customer]: IntuitIO ~> Kleisli[M, C, ?] = new (IntuitIO ~> Kleisli[M, C, ?]) {
-      def apply[A](ma: IntuitIO[A]): Kleisli[M, C, A] =
-        Free.runFC[IntuitOp, Kleisli[M, C, ?], A](ma)(interpK)
+    def transK[C: Customer]: CustomerIO ~> Kleisli[M, C, ?] = new (CustomerIO ~> Kleisli[M, C, ?]) {
+      def apply[A](ma: CustomerIO[A]): Kleisli[M, C, A] =
+        Free.runFC[CustomerOp, Kleisli[M, C, ?], A](ma)(interpK)
     }
 
-    def transFor[C: Customer](customer: C): IntuitIO ~> M = new (IntuitIO ~> M) {
-      override def apply[A](ma: IntuitIO[A]): M[A] =
+    def transFor[C: Customer](customer: C): CustomerIO ~> M = new (CustomerIO ~> M) {
+      override def apply[A](ma: CustomerIO[A]): M[A] =
         transK.apply(ma)(customer)
     }
   }

@@ -27,20 +27,35 @@ import scintuit.data.raw.transaction._
 import scalaz.{Coyoneda, Monad, Free, \/}
 
 
-object intuit {
+object customer {
+
+  /**
+   * Typeclass for representations of an Intuit customer
+   */
+  trait Customer[T] {
+    def name(customer: T): String
+  }
+
+  object Customer {
+    def apply[C: Customer]: Customer[C] = implicitly[Customer[C]]
+
+    implicit object StringCustomer extends Customer[String] {
+      def name(customer: String): String = customer
+    }
+  }
 
   /**
    * ADT for Intuit API operations
    */
-  sealed trait IntuitOp[A]
+  sealed trait CustomerOp[A]
 
-  object IntuitOp {
+  object CustomerOp {
     // ---------------------------- Institutions ----------------------------
-    case object ListInstitutions extends IntuitOp[Vector[Institution]] {
+    case object ListInstitutions extends CustomerOp[Vector[Institution]] {
       override def toString = s"listInstitutions"
     }
 
-    case class GetInstitution(id: InstitutionId) extends IntuitOp[Option[InstitutionDetails]] {
+    case class GetInstitution(id: InstitutionId) extends CustomerOp[Option[InstitutionDetails]] {
       override def toString = s"getInstitution (institutionId=$id)"
     }
 
@@ -48,7 +63,7 @@ object intuit {
     case class AddAccounts(
       id: InstitutionId,
       credentials: Seq[Credentials]
-    ) extends IntuitOp[LoginError \/ Vector[Account]] {
+    ) extends CustomerOp[LoginError \/ Vector[Account]] {
       override def toString = s"addAccounts (institutionId=$id)"
     }
 
@@ -57,14 +72,14 @@ object intuit {
       sessionId: ChallengeSessionId,
       nodeId: ChallengeNodeId,
       answers: Seq[ChallengeAnswer]
-    ) extends IntuitOp[LoginError \/ Vector[Account]] {
+    ) extends CustomerOp[LoginError \/ Vector[Account]] {
       override def toString = s"addAccountsChallenge (institutionId=$id)"
     }
 
     case class UpdateLogin(
       id: LoginId,
       credentials: Seq[Credentials]
-    ) extends IntuitOp[LoginError \/ Unit] {
+    ) extends CustomerOp[LoginError \/ Unit] {
       override def toString = s"updateLogin (loginId=$id)"
     }
 
@@ -73,29 +88,29 @@ object intuit {
       sessionId: ChallengeSessionId,
       nodeId: ChallengeNodeId,
       answers: Seq[ChallengeAnswer]
-    ) extends IntuitOp[LoginError \/ Unit] {
+    ) extends CustomerOp[LoginError \/ Unit] {
       override def toString = s"updateLoginChallenge (loginId=$id)"
     }
 
     // ------------------------------ Accounts ------------------------------
-    case class GetAccount(id: AccountId) extends IntuitOp[Account] {
+    case class GetAccount(id: AccountId) extends CustomerOp[Account] {
       override def toString = s"getAccount (accountId=$id)"
     }
 
-    case class DeleteAccount(id: AccountId) extends IntuitOp[Int] {
+    case class DeleteAccount(id: AccountId) extends CustomerOp[Int] {
       override def toString = s"deleteAccount (accountId=$id)"
 
     }
 
-    case object ListCustomerAccounts extends IntuitOp[Vector[Account]] {
+    case object ListCustomerAccounts extends CustomerOp[Vector[Account]] {
       override def toString = s"listCustomerAccounts"
     }
 
-    case class ListLoginAccounts(id: LoginId) extends IntuitOp[Vector[Account]] {
+    case class ListLoginAccounts(id: LoginId) extends CustomerOp[Vector[Account]] {
       override def toString = s"listLoginAccounts (loginId=$id)"
     }
 
-    case class UpdateAccountType(id: AccountId, accountType: AccountType) extends IntuitOp[Unit] {
+    case class UpdateAccountType(id: AccountId, accountType: AccountType) extends CustomerOp[Unit] {
       override def toString = s"updateAccountType (accountId=$id)"
     }
 
@@ -104,42 +119,42 @@ object intuit {
       id: AccountId,
       start: DateTime,
       end: Option[DateTime]
-    ) extends IntuitOp[TransactionsResponse] {
+    ) extends CustomerOp[TransactionsResponse] {
       override def toString = s"listTransactions (accountId=$id, start=$start, end=${end getOrElse "<none>"})"
     }
 
     // ------------------------------ Positions -----------------------------
-    case class ListPositions(id: AccountId) extends IntuitOp[Vector[Position]] {
+    case class ListPositions(id: AccountId) extends CustomerOp[Vector[Position]] {
       override def toString = s"listPositions (accountId=$id)"
     }
 
     // ----------------------------- Customers ------------------------------
-    case object DeleteCustomer extends IntuitOp[Int] {
+    case object DeleteCustomer extends CustomerOp[Int] {
       override def toString = s"deleteCustomer"
     }
   }
 
-  import IntuitOp._
+  import CustomerOp._
 
   /**
-   * Free monad over a free functor of [[IntuitOp]].
+   * Free monad over a free functor of [[CustomerOp]].
    */
-  type IntuitIO[A] = Free.FreeC[IntuitOp, A]
+  type CustomerIO[A] = Free.FreeC[CustomerOp, A]
 
   /**
-   * Monad instance for [[IntuitIO]] (can't be be inferred).
+   * Monad instance for [[CustomerIO]] (can't be be inferred).
    */
-  implicit val MonadIntuitIO: Monad[IntuitIO] = Free.freeMonad[Coyoneda[IntuitOp, ?]]
+  implicit val MonadCustomerIO: Monad[CustomerIO] = Free.freeMonad[Coyoneda[CustomerOp, ?]]
 
   // ---------------------------- Institutions ----------------------------
-  val getInstitutions: IntuitIO[Vector[Institution]] =
+  val getInstitutions: CustomerIO[Vector[Institution]] =
     Free.liftFC(ListInstitutions)
 
-  def getInstitutionDetails(id: Long): IntuitIO[Option[InstitutionDetails]] =
+  def getInstitutionDetails(id: Long): CustomerIO[Option[InstitutionDetails]] =
     Free.liftFC(GetInstitution(id))
 
   // ------------------------------- Logins -------------------------------
-  def addAccounts(id: InstitutionId, credentials: Seq[Credentials]): IntuitIO[LoginError \/ Vector[Account]] =
+  def addAccounts(id: InstitutionId, credentials: Seq[Credentials]): CustomerIO[LoginError \/ Vector[Account]] =
     Free.liftFC(AddAccounts(id, credentials))
 
   def addAccounts(
@@ -147,10 +162,10 @@ object intuit {
     sessionId: ChallengeSessionId,
     nodeId: ChallengeNodeId,
     answers: Seq[ChallengeAnswer]
-  ): IntuitIO[LoginError \/ Vector[Account]] =
+  ): CustomerIO[LoginError \/ Vector[Account]] =
     Free.liftFC(AddAccountsChallenge(id, sessionId, nodeId, answers))
 
-  def updateLogin(id: LoginId, credentials: Seq[Credentials]): IntuitIO[LoginError \/ Unit] =
+  def updateLogin(id: LoginId, credentials: Seq[Credentials]): CustomerIO[LoginError \/ Unit] =
     Free.liftFC(UpdateLogin(id, credentials))
 
   def updateLogin(
@@ -158,34 +173,34 @@ object intuit {
     sessionId: ChallengeSessionId,
     nodeId: ChallengeNodeId,
     answers: Seq[ChallengeAnswer]
-  ): IntuitIO[LoginError \/ Unit] =
+  ): CustomerIO[LoginError \/ Unit] =
     Free.liftFC(UpdateLoginChallenge(id, sessionId, nodeId, answers))
 
   // ------------------------------ Accounts ------------------------------
-  def getAccount(id: AccountId): IntuitIO[Account] =
+  def getAccount(id: AccountId): CustomerIO[Account] =
     Free.liftFC(GetAccount(id))
 
-  val getCustomerAccounts: IntuitIO[Vector[Account]] =
+  val getCustomerAccounts: CustomerIO[Vector[Account]] =
     Free.liftFC(ListCustomerAccounts)
 
-  def getLoginAccounts(id: LoginId): IntuitIO[Vector[Account]] =
+  def getLoginAccounts(id: LoginId): CustomerIO[Vector[Account]] =
     Free.liftFC(ListLoginAccounts(id))
 
-  def deleteAccount(id: AccountId): IntuitIO[Int] =
+  def deleteAccount(id: AccountId): CustomerIO[Int] =
     Free.liftFC(DeleteAccount(id))
 
-  def updateAccountType(id: AccountId, accountType: AccountType): IntuitIO[Unit] =
+  def updateAccountType(id: AccountId, accountType: AccountType): CustomerIO[Unit] =
     Free.liftFC(UpdateAccountType(id, accountType))
 
   // ------------------------------ Transactions ------------------------------
-  def getTransactions(id: AccountId, start: DateTime, end: Option[DateTime]): IntuitIO[TransactionsResponse] =
+  def getTransactions(id: AccountId, start: DateTime, end: Option[DateTime]): CustomerIO[TransactionsResponse] =
     Free.liftFC(ListTransactions(id, start, end))
 
   // ------------------------------ Positions ------------------------------
-  def getPositions(id: AccountId): IntuitIO[Vector[Position]] =
+  def getPositions(id: AccountId): CustomerIO[Vector[Position]] =
     Free.liftFC(ListPositions(id))
 
   // ----------------------------- Customers ------------------------------
-  val deleteCustomer: IntuitIO[Int] =
+  val delete: CustomerIO[Int] =
     Free.liftFC(DeleteCustomer)
 }

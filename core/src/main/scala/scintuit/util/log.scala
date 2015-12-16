@@ -2,7 +2,7 @@ package scintuit.util
 
 import com.github.nscala_time.time.Imports._
 import org.log4s._
-import scintuit.customer.Customer
+import scintuit.raw.customer.Customer
 import scintuit.util.capture.Capture
 import scintuit.util.http.{Response, Request}
 
