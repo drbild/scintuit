@@ -19,6 +19,7 @@ object Dependencies {
     val nscalaMoney = "0.10.0"
     val play        = "2.4.4"
     val playJsonExt = "0.5.0"
+    val slf4j       = "1.7.13"
   }
 
   // Libraries
@@ -37,5 +38,6 @@ object Dependencies {
     val playJsonExt         = "org.cvogt"                     %% "play-json-extensions"   % V.playJsonExt
     val playWs              = "com.typesafe.play"             %% "play-ws"                % V.play
     val jsr305              = "com.google.code.findbugs"      %  "jsr305"                 % V.jsr305 % "provided"
+    val slf4jSimple         = "org.slf4j"                     %  "slf4j-simple"           % V.slf4j
   }
 }

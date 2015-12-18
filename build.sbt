@@ -64,7 +64,8 @@ lazy val contribHttp4s = (
     settings(
       name                := "scintuit-contrib-http4s",
       libraryDependencies ++= Seq(
-        Libs.http4sClient
+        Libs.http4sClient,
+        Libs.slf4jSimple
       )
     )
     dependsOn(core, data, contribPlayJson)
