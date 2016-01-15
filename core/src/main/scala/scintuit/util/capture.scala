@@ -38,7 +38,7 @@ object capture {
 
         def apply[A](a: => A): Task[A] = Task.delay(a)
         def async[A](register: ((Throwable \/ A) => Unit) => Unit): Task[A] = Task.async(register)
-        def runAsync[A](ma: Task[A])(f: (Throwable \/ A) => Unit): Unit = ma.runAsync(f)
+        def runAsync[A](ma: Task[A])(f: (Throwable \/ A) => Unit): Unit = ma.unsafePerformAsync(f)
       }
   }
 }
