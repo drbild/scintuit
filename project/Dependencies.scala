@@ -10,15 +10,15 @@ object Dependencies {
   object V {
     val scala       = "2.11.7"
     val scalaz      = "7.2.0"
-    val caffeine    = "2.0.2"
+    val caffeine    = "2.1.0"
     val enumeratum  = "1.3.2"
-    val http4s      = "0.11.1"
+    val http4s      = "0.11.3"
     val jsr305      = "3.0.1"
     val log4s       = "1.2.1"
     val nscalaTime  = "2.6.0"
-    val nscalaMoney = "0.10.0"
-    val play        = "2.4.4"
-    val playJsonExt = "0.5.0"
+    val nscalaMoney = "0.11.0"
+    val play        = "2.4.6"
+    val playJsonExt = "0.6.1"
   }
 
   // Libraries
