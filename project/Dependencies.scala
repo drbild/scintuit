@@ -9,7 +9,7 @@ object Dependencies {
   // Versions
   object V {
     val scala       = "2.11.7"
-    val scalaz      = "7.2.0"
+    val scalaz      = "7.1.5"
     val caffeine    = "2.1.0"
     val enumeratum  = "1.3.2"
     val http4s      = "0.11.3"

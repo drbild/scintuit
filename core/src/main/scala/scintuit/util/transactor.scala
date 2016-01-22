@@ -50,9 +50,7 @@ object transactor {
 
     def transK[C: Customer]: CustomerIO ~> Kleisli[M, C, ?] = new (CustomerIO ~> Kleisli[M, C, ?]) {
       def apply[A](ma: CustomerIO[A]): Kleisli[M, C, A] =
-        ma.foldMap[Kleisli[M, C, ?]](interpK)
-
-        //Free.runFC[CustomerOp, Kleisli[M, C, ?], A](ma)(interpK)
+        Free.runFC[CustomerOp, Kleisli[M, C, ?], A](ma)(interpK)
     }
 
     def trans[C: Customer](customer: C): CustomerIO ~> M = new (CustomerIO ~> M) {

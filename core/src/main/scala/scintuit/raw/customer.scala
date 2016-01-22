@@ -139,23 +139,23 @@ object customer {
   /**
    * Free monad over a free functor of [[CustomerOp]].
    */
-  type CustomerIO[A] = Free[CustomerOp, A]
+  type CustomerIO[A] = Free.FreeC[CustomerOp, A]
 
   /**
    * Monad instance for [[CustomerIO]] (can't be be inferred).
    */
-  implicit val MonadCustomerIO: Monad[CustomerIO] = Free.freeMonad[CustomerOp]
+  implicit val MonadCustomerIO: Monad[CustomerIO] = Free.freeMonad[Coyoneda[CustomerOp, ?]]
 
   // ---------------------------- Institutions ----------------------------
   val getInstitutions: CustomerIO[Vector[Institution]] =
-    Free.liftF(ListInstitutions)
+    Free.liftFC(ListInstitutions)
 
   def getInstitutionDetails(id: Long): CustomerIO[Option[InstitutionDetails]] =
-    Free.liftF(GetInstitution(id))
+    Free.liftFC(GetInstitution(id))
 
   // ------------------------------- Logins -------------------------------
   def addAccounts(id: InstitutionId, credentials: Seq[Credentials]): CustomerIO[LoginError \/ Vector[Account]] =
-    Free.liftF(AddAccounts(id, credentials))
+    Free.liftFC(AddAccounts(id, credentials))
 
   def addAccounts(
     id: InstitutionId,
@@ -163,10 +163,10 @@ object customer {
     nodeId: ChallengeNodeId,
     answers: Seq[ChallengeAnswer]
   ): CustomerIO[LoginError \/ Vector[Account]] =
-    Free.liftF(AddAccountsChallenge(id, sessionId, nodeId, answers))
+    Free.liftFC(AddAccountsChallenge(id, sessionId, nodeId, answers))
 
   def updateLogin(id: LoginId, credentials: Seq[Credentials]): CustomerIO[LoginError \/ Unit] =
-    Free.liftF(UpdateLogin(id, credentials))
+    Free.liftFC(UpdateLogin(id, credentials))
 
   def updateLogin(
     id: LoginId,
@@ -174,33 +174,33 @@ object customer {
     nodeId: ChallengeNodeId,
     answers: Seq[ChallengeAnswer]
   ): CustomerIO[LoginError \/ Unit] =
-    Free.liftF(UpdateLoginChallenge(id, sessionId, nodeId, answers))
+    Free.liftFC(UpdateLoginChallenge(id, sessionId, nodeId, answers))
 
   // ------------------------------ Accounts ------------------------------
   def getAccount(id: AccountId): CustomerIO[Account] =
-    Free.liftF(GetAccount(id))
+    Free.liftFC(GetAccount(id))
 
   val getCustomerAccounts: CustomerIO[Vector[Account]] =
-    Free.liftF(ListCustomerAccounts)
+    Free.liftFC(ListCustomerAccounts)
 
   def getLoginAccounts(id: LoginId): CustomerIO[Vector[Account]] =
-    Free.liftF(ListLoginAccounts(id))
+    Free.liftFC(ListLoginAccounts(id))
 
   def deleteAccount(id: AccountId): CustomerIO[Int] =
-    Free.liftF(DeleteAccount(id))
+    Free.liftFC(DeleteAccount(id))
 
   def updateAccountType(id: AccountId, accountType: AccountType): CustomerIO[Unit] =
-    Free.liftF(UpdateAccountType(id, accountType))
+    Free.liftFC(UpdateAccountType(id, accountType))
 
   // ------------------------------ Transactions ------------------------------
   def getTransactions(id: AccountId, start: DateTime, end: Option[DateTime]): CustomerIO[TransactionsResponse] =
-    Free.liftF(ListTransactions(id, start, end))
+    Free.liftFC(ListTransactions(id, start, end))
 
   // ------------------------------ Positions ------------------------------
   def getPositions(id: AccountId): CustomerIO[Vector[Position]] =
-    Free.liftF(ListPositions(id))
+    Free.liftFC(ListPositions(id))
 
   // ----------------------------- Customers ------------------------------
   val delete: CustomerIO[Int] =
-    Free.liftF(DeleteCustomer)
+    Free.liftFC(DeleteCustomer)
 }
